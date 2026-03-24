@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure Data Engineering — Training Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D0F12;
+  --surface: #151820;
+  --surface-2: #1C2030;
+  --surface-3: #232840;
+  --border: #2A3048;
+  --border-soft: #1F2638;
+  --text-primary: #EEF0F8;
+  --text-secondary: #8B93B8;
+  --text-muted: #4A5278;
+  --accent-adf: #0078D4;
+  --accent-adf-dim: #0050A0;
+  --accent-adf-glow: rgba(0,120,212,0.15);
+  --accent-fabric: #7B3FE4;
+  --accent-fabric-dim: #5A2BB0;
+  --accent-fabric-glow: rgba(123,63,228,0.15);
+  --accent-green: #1DB887;
+  --accent-orange: #F5A623;
+  --accent-red: #E84040;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── LAYOUT ── */
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 24px;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.sidebar-brand {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sidebar-search {
+  padding: 14px 16px 8px;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font-size: 12px;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-input:focus { border-color: var(--accent-adf); }
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  padding: 14px 20px 5px;
+}
+
+.nav-pill {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  margin: 1px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.12s;
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: calc(100% - 16px);
+  text-align: left;
+}
+
+.nav-pill:hover { background: var(--surface-2); }
+.nav-pill.active { background: var(--surface-3); }
+.nav-pill.active .nav-pill-text { color: var(--text-primary); font-weight: 500; }
+
+.nav-pill-icon { font-size: 14px; flex-shrink: 0; width: 22px; }
+.nav-pill-text { font-size: 12.5px; color: var(--text-secondary); flex: 1; }
+.nav-pill-badge {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--surface-3);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.nav-pill-type {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.nav-pill-type.adf { background: var(--accent-adf); }
+.nav-pill-type.fabric { background: var(--accent-fabric); }
+.nav-pill-type.dataset { background: var(--accent-green); }
+
+/* ── MAIN ── */
+.main {
+  overflow-y: auto;
+  height: 100vh;
+}
+
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(135deg, #0D0F12 0%, #111627 50%, #0D0F12 100%);
+  padding: 60px 64px 48px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(0,120,212,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 200px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(123,63,228,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.eyebrow-chip {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+.eyebrow-chip.adf { color: var(--accent-adf); border-color: var(--accent-adf-dim); background: var(--accent-adf-glow); }
+.eyebrow-chip.fabric { color: #A97CF0; border-color: var(--accent-fabric-dim); background: var(--accent-fabric-glow); }
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+  background: linear-gradient(135deg, #EEF0F8 30%, #8B93B8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  max-width: 620px;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+.stat-num.adf { color: var(--accent-adf); }
+.stat-num.fabric { color: #A97CF0; }
+.stat-num.green { color: var(--accent-green); }
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── CONTENT AREA ── */
+.content-area {
+  padding: 0 64px 60px;
+}
+
+/* ── TAB BAR ── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 36px;
+  padding-top: 28px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  font-family: var(--font-sans);
+}
+
+.tab-btn:hover { color: var(--text-secondary); }
+.tab-btn.active-adf { color: var(--accent-adf); border-bottom-color: var(--accent-adf); }
+.tab-btn.active-fabric { color: #A97CF0; border-bottom-color: #A97CF0; }
+.tab-btn.active-datasets { color: var(--accent-green); border-bottom-color: var(--accent-green); }
+.tab-btn.active-scd { color: var(--accent-orange); border-bottom-color: var(--accent-orange); }
+
+/* :target-based active tab highlighting */
+body:not(:has(.panel:target)) label[for="panel-overview"],
+body:not(:has(.panel:target)) a[href="#panel-overview"] { color: var(--accent-adf); border-bottom-color: var(--accent-adf); }
+body:has(#panel-adf:target) a[href="#panel-adf"] { color: var(--accent-adf); border-bottom-color: var(--accent-adf); }
+body:has(#panel-fabric:target) a[href="#panel-fabric"] { color: #A97CF0; border-bottom-color: #A97CF0; }
+body:has(#panel-datasets:target) a[href="#panel-datasets"] { color: var(--accent-green); border-bottom-color: var(--accent-green); }
+body:has(#panel-scd:target) a[href="#panel-scd"] { color: var(--accent-orange); border-bottom-color: var(--accent-orange); }
+body:has(#panel-scd2:target) a[href="#panel-scd2"] { color: var(--accent-orange); border-bottom-color: var(--accent-orange); }
+body:not(:has(.panel:target)) a[href="#panel-overview"],
+#panel-overview:target ~ * a[href="#panel-overview"] { color: var(--accent-adf); border-bottom-color: var(--accent-adf); }
+/* sidebar nav pill :target active state */
+body:not(:has(.panel:target)) a.nav-pill[href="#panel-overview"] { background: var(--surface-3); }
+body:not(:has(.panel:target)) a.nav-pill[href="#panel-overview"] .nav-pill-text { color: var(--text-primary); font-weight: 500; }
+body:has(#panel-adf:target) a.nav-pill[href="#panel-adf"],
+body:has(#panel-adf:target) a.nav-pill[href="#panel-adf-int"],
+body:has(#panel-adf:target) a.nav-pill[href="#panel-adf-adv"] { background: var(--surface-2); }
+body:has(#panel-fabric:target) a.nav-pill[href="#panel-fabric"],
+body:has(#panel-fabric:target) a.nav-pill[href="#panel-fabric-int"],
+body:has(#panel-fabric:target) a.nav-pill[href="#panel-fabric-adv"] { background: var(--surface-2); }
+body:has(#panel-datasets:target) a.nav-pill[href="#panel-datasets"] { background: var(--surface-3); }
+body:has(#panel-scd:target) a.nav-pill[href="#panel-scd"] { background: var(--surface-3); }
+body:has(#panel-scd2:target) a.nav-pill[href="#panel-scd2"] { background: var(--surface-3); }
+a.nav-pill[href]:hover .nav-pill-text,
+a.nav-pill:target .nav-pill-text { color: var(--text-primary); }
+a.tab-btn { text-decoration: none; }
+
+
+.tab-count {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  background: var(--surface-2);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--text-muted);
+}
+
+/* ── PANEL ── */
+.panel { display: none; scroll-margin-top: 0; }
+/* CSS-only tab navigation via :target */
+#panel-overview { display: block; }          /* default visible */
+body:has(.panel:target) #panel-overview { display: none; }  /* hide when any tab targeted */
+.panel:target { display: block; }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.section-count {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ── CARD GRID ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 40px;
+}
+
+.use-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.use-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.use-card.adf::before { background: linear-gradient(90deg, var(--accent-adf), #50A8FF); }
+.use-card.fabric::before { background: linear-gradient(90deg, var(--accent-fabric), #C490FF); }
+
+.use-card:hover {
+  border-color: var(--surface-3);
+  background: var(--surface-2);
+  transform: translateY(-1px);
+}
+
+.use-card:hover::before { opacity: 1; }
+.use-card.open { border-color: var(--border); background: var(--surface-2); }
+.use-card.open::before { opacity: 1; }
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.card-icon { font-size: 22px; line-height: 1; }
+.card-level-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.card-level-badge.intermediate {
+  color: var(--accent-adf);
+  background: var(--accent-adf-glow);
+  border: 1px solid rgba(0,120,212,0.2);
+}
+.card-level-badge.advanced {
+  color: #F5A623;
+  background: rgba(245,166,35,0.1);
+  border: 1px solid rgba(245,166,35,0.2);
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.card-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── EXPANDED DETAIL ── */
+.detail-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.detail-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.detail-icon { font-size: 32px; flex-shrink: 0; }
+
+.detail-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.detail-desc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.detail-body { padding: 24px 28px; }
+
+/* ── PREREQS ── */
+.prereqs-block {
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 22px;
+}
+
+.prereqs-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.prereq-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  padding: 3px 0;
+}
+
+.prereq-dot {
+  width: 5px; height: 5px;
+  background: var(--accent-green);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+
+/* ── STEPS ── */
+.steps-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.step-item {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.step-content {}
+.step-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.step-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.step-desc code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #7DD3FC;
+}
+
+/* ── TIP ── */
+.tip-block {
+  display: flex;
+  gap: 12px;
+  background: rgba(29,184,135,0.06);
+  border: 1px solid rgba(29,184,135,0.2);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-top: 20px;
+}
+.tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.tip-content {}
+.tip-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-green); margin-bottom: 4px; }
+.tip-text { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
+.tip-text code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: #7DD3FC;
+}
+
+/* ── DATASET PANEL ── */
+.dataset-intro {
+  background: linear-gradient(135deg, rgba(29,184,135,0.06) 0%, rgba(29,184,135,0.02) 100%);
+  border: 1px solid rgba(29,184,135,0.2);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+
+.dataset-intro-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-green);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dataset-intro-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.dataset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.dataset-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.dataset-card-header {
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dataset-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.dataset-icon.csv { background: rgba(29,184,135,0.1); }
+.dataset-icon.sql { background: rgba(0,120,212,0.1); }
+.dataset-icon.json { background: rgba(245,166,35,0.1); }
+
+.dataset-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.dataset-format {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.dataset-body { padding: 16px 18px; }
+
+.data-preview {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  margin-bottom: 14px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.data-table th {
+  background: var(--surface-3);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  padding: 8px 12px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: 6px 12px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-soft);
+  white-space: nowrap;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--surface-3); color: var(--text-primary); }
+
+.dataset-use-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.dataset-use-text {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ── SCD PANEL ── */
+.scd-hero {
+  background: linear-gradient(135deg, rgba(245,166,35,0.06) 0%, rgba(245,166,35,0.02) 100%);
+  border: 1px solid rgba(245,166,35,0.2);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+
+.scd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-orange);
+  background: rgba(245,166,35,0.1);
+  border: 1px solid rgba(245,166,35,0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.scd-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.scd-desc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 700px;
+}
+
+.flow-diagram {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+
+.flow-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  text-align: center;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.flow-box-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.flow-box-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.flow-arrow {
+  color: var(--text-muted);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.sql-block {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.sql-block-header {
+  padding: 10px 16px;
+  background: var(--surface-3);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sql-block-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sql-block-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+.sql-block-tag.orange { color: var(--accent-orange); background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.2); }
+.sql-block-tag.blue { color: var(--accent-adf); background: var(--accent-adf-glow); border: 1px solid rgba(0,120,212,0.2); }
+.sql-block-tag.green { color: var(--accent-green); background: rgba(29,184,135,0.08); border: 1px solid rgba(29,184,135,0.2); }
+
+.sql-code {
+  padding: 16px 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.sql-kw { color: #569CD6; }
+.sql-fn { color: #DCDCAA; }
+.sql-str { color: #CE9178; }
+.sql-cm { color: var(--text-muted); font-style: italic; }
+.sql-num { color: #B5CEA8; }
+.sql-type { color: #4EC9B0; }
+
+.scd-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.scd-step-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.scd-step-num {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  opacity: 0.3;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.scd-step-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.scd-step-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ── SEARCH RESULTS ── */
+.search-empty {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ── SCROLLBAR ── */
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── FOOTER NOTE ── */
+.quick-ref {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-top: 16px;
+}
+
+.quick-ref-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ref-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.ref-item {
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-soft);
+}
+.ref-item strong { color: var(--text-primary); display: block; font-size: 11px; margin-bottom: 2px; }
+
+@media (max-width: 860px) {
+  .app-shell { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .hero, .content-area { padding-left: 24px; padding-right: 24px; }
+  .hero-title { font-size: 30px; }
+  .card-grid { grid-template-columns: 1fr; }
+}
+
+/* ── DETAILS/SUMMARY card expand (replaces JS click) ── */
+details.use-card { cursor: pointer; }
+details.use-card summary { list-style: none; cursor: pointer; }
+details.use-card summary::-webkit-details-marker { display: none; }
+details.use-card summary.card-summary {
+  display: block;
+  padding: 20px 20px 16px;
+}
+details.use-card[open] { border-color: var(--accent-adf); }
+details.use-card.fabric[open] { border-color: var(--accent-fabric); }
+details.use-card[open] > summary { border-bottom: 1px solid var(--border-soft); }
+details.use-card .detail-panel { border: none; border-radius: 0; margin-bottom: 0; }
+details.use-card > summary::after {
+  content: '▸';
+  float: right;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: -20px;
+}
+details.use-card[open] > summary::after { content: '▾'; }
+/* remove card padding that was on .use-card directly */
+.use-card { padding: 0; }
+
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-title">Azure Data Engineering</div>
+      <div class="brand-sub">Training Hub · 2025</div>
+    </div>
+
+    <div class="sidebar-search">
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍  Search use cases..." oninput="handleSearch(this.value)">
+    </div>
+
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-pill tab-btn" id="nav-overview" href="#panel-overview">
+      <span class="nav-pill-icon">🏠</span>
+      <span class="nav-pill-text">Training Hub</span>
+    </a>
+
+    <div class="nav-section-label">Azure Data Factory</div>
+    <a class="nav-pill tab-btn" id="nav-adf" href="#panel-adf">
+      <span class="nav-pill-icon">🏭</span>
+      <span class="nav-pill-text">All ADF Patterns</span>
+      <span class="nav-pill-badge">8</span>
+    </a>
+    <a class="nav-pill tab-btn" id="nav-adf-int" href="#panel-adf">
+      <span class="nav-pill-type adf"></span>
+      <span class="nav-pill-text">Intermediate</span>
+    </a>
+    <a class="nav-pill tab-btn" id="nav-adf-adv" href="#panel-adf">
+      <span class="nav-pill-type adf"></span>
+      <span class="nav-pill-text">Advanced</span>
+    </a>
+
+    <div class="nav-section-label">Microsoft Fabric</div>
+    <a class="nav-pill tab-btn" id="nav-fabric" href="#panel-fabric">
+      <span class="nav-pill-icon">💎</span>
+      <span class="nav-pill-text">All Fabric Patterns</span>
+      <span class="nav-pill-badge">17</span>
+    </a>
+    <a class="nav-pill tab-btn" id="nav-fabric-int" href="#panel-fabric">
+      <span class="nav-pill-type fabric"></span>
+      <span class="nav-pill-text">Intermediate</span>
+    </a>
+    <a class="nav-pill tab-btn" id="nav-fabric-adv" href="#panel-fabric">
+      <span class="nav-pill-type fabric"></span>
+      <span class="nav-pill-text">Advanced</span>
+    </a>
+
+    <div class="nav-section-label">Training Data</div>
+    <a class="nav-pill tab-btn" id="nav-datasets" href="#panel-datasets">
+      <span class="nav-pill-icon">📊</span>
+      <span class="nav-pill-text">Datasets Explorer</span>
+      <span class="nav-pill-badge">7</span>
+    </a>
+    <a class="nav-pill tab-btn" id="nav-scd" href="#panel-scd">
+      <span class="nav-pill-icon">🔄</span>
+      <span class="nav-pill-text">SCD Type 1 Deep Dive</span>
+    </a>
+    <a class="nav-pill tab-btn" id="nav-scd2" href="#panel-scd2">
+      <span class="nav-pill-icon">📜</span>
+      <span class="nav-pill-text">SCD Type 2 Deep Dive</span>
+    </a>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- ── HERO ── -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-chip adf">Azure Data Factory</span>
+        <span class="eyebrow-chip fabric">Microsoft Fabric</span>
+      </div>
+      <h1 class="hero-title">Azure Data Engineering<br>Training Hub</h1>
+      <p class="hero-desc">
+        A unified, hands-on reference combining ADF pipeline patterns, Microsoft Fabric workflows, and real training datasets. Built for intermediate to advanced data engineers working in the Azure ecosystem.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num adf">8</span>
+          <span class="stat-label">ADF Patterns</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num fabric">17</span>
+          <span class="stat-label">Fabric Patterns</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num green">7</span>
+          <span class="stat-label">Training Datasets</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" style="color:var(--accent-orange)">2</span>
+          <span class="stat-label">SCD Deep Dives</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONTENT ── -->
+    <div class="content-area">
+
+      <!-- TAB BAR -->
+      <div class="tab-bar">
+        <a class="tab-btn active-adf" id="tab-overview" href="#panel-overview">🏠 Overview</a>
+        <a class="tab-btn" id="tab-adf" href="#panel-adf">🏭 ADF Patterns <span class="tab-count">8</span></a>
+        <a class="tab-btn" id="tab-fabric" href="#panel-fabric">💎 Fabric Patterns <span class="tab-count">17</span></a>
+        <a class="tab-btn" id="tab-datasets" href="#panel-datasets">📊 Datasets <span class="tab-count">7</span></a>
+        <a class="tab-btn" id="tab-scd" href="#panel-scd">🔄 SCD Type 1</a>
+        <a class="tab-btn" id="tab-scd2" href="#panel-scd2">📜 SCD Type 2</a>
+      </div>
+
+      <!-- ── OVERVIEW PANEL ── -->
+      <div id="panel-overview" class="panel active">
+        <div class="section-header">
+          <div class="section-title">How to use this guide</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:32px;">
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon csv">🏭</div>
+              <div>
+                <div class="dataset-name">Azure Data Factory</div>
+                <div class="dataset-format">8 pipeline patterns</div>
+              </div>
+            </div>
+            <div class="dataset-body" style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+              Covers Incremental Load, Metadata-Driven pipelines, ForEach loops, REST API ingestion, JSON-to-SQL transformation, Error Handling, Mapping Data Flows, and Multi-Source integration.
+              <br><br>Each pattern includes step-by-step setup with actual ADF expressions and SQL code.
+            </div>
+          </div>
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon sql">💎</div>
+              <div>
+                <div class="dataset-name">Microsoft Fabric</div>
+                <div class="dataset-format">17 end-to-end workflows</div>
+              </div>
+            </div>
+            <div class="dataset-body" style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+              Covers Lakehouse ingestion, PySpark transformations, Delta tables, Medallion Architecture, Incremental Processing, Data Quality Frameworks, Semantic Models, and Power BI integration.
+              <br><br>All PySpark code is production-ready and usable directly in Fabric notebooks.
+            </div>
+          </div>
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon csv">📊</div>
+              <div>
+                <div class="dataset-name">Training Datasets</div>
+                <div class="dataset-format">Real CSVs, SQL scripts & JSON</div>
+              </div>
+            </div>
+            <div class="dataset-body" style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+              Includes customer SCD data (3-day sliding window), employee/department data, Adidas US Sales, COVID JSON, and SQL scripts for the ADF migration project.
+              <br><br>Datasets map directly to the SCD Type 1 and pipeline patterns in this guide.
+            </div>
+          </div>
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon json">🔄</div>
+              <div>
+                <div class="dataset-name">SCD Type 1 Deep Dive</div>
+                <div class="dataset-format">Fabric Warehouse · T-SQL</div>
+              </div>
+            </div>
+            <div class="dataset-body" style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+              Full walkthrough of SCD Type 1 using the actual <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">customer_2025-07-10/11/12.csv</code> files and the stored procedure from the project.
+              <br><br>Includes table design, UPSERT logic, and ADF expression parsing.
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-ref">
+          <div class="quick-ref-title">⚡ Quick Reference — Key Technologies</div>
+          <div class="ref-grid">
+            <div class="ref-item"><strong>ADF Copy Activity</strong>Move data between 100+ connectors with mapping</div>
+            <div class="ref-item"><strong>Tumbling Window Trigger</strong>Gap-free time windows, safe backfill</div>
+            <div class="ref-item"><strong>Mapping Data Flow</strong>Spark-backed no-code ETL with debug mode</div>
+            <div class="ref-item"><strong>ForEach Activity</strong>Parallel iteration over arrays/control tables</div>
+            <div class="ref-item"><strong>OneLake</strong>Single storage layer for all Fabric items</div>
+            <div class="ref-item"><strong>Delta Lake</strong>ACID transactions + time travel on Parquet</div>
+            <div class="ref-item"><strong>Direct Lake Mode</strong>Power BI reads Delta files without import</div>
+            <div class="ref-item"><strong>mssparkutils</strong>Fabric notebook utilities (exit, file ops)</div>
+            <div class="ref-item"><strong>SCD Type 1</strong>Overwrite — no history, latest values only</div>
+            <div class="ref-item"><strong>Watermark Pattern</strong>Track last loaded timestamp to load incrementally</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ADF PANEL ── -->
+      <div id="panel-adf" class="panel">
+        <div id="adf-content"><div class="section-header"><div class="section-title">Intermediate Patterns</div><div class="section-count">8 patterns</div></div>
+<div class="card-grid"><details class="use-card adf" id="card-adf-1">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🔁</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Incremental Data Load</div>
+    <div class="card-desc">Load only new or modified records using watermark columns to avoid full-table scans on every run</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🔁</div><div><div class="detail-title">Incremental Data Load</div><div class="detail-desc">Load only new or modified records using watermark columns to avoid full-table scans on every run</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Azure Data Factory instance</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Source: Azure SQL with a ModifiedDate / LastUpdated column</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Destination: Azure SQL or ADLS Gen2</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Control table in Azure SQL to store watermarks</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create a watermark control table</div><div class="step-desc"><code>CREATE TABLE dbo.watermark_store (TableName NVARCHAR(100), WatermarkValue DATETIME2); INSERT INTO dbo.watermark_store VALUES ('orders', '1900-01-01');</code></div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Add Lookup activity — get last watermark</div><div class="step-desc">Lookup → Query: <code>SELECT WatermarkValue FROM dbo.watermark_store WHERE TableName = 'orders'</code>. Feeds lower bound to Copy activity.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Add Copy Data with dynamic query</div><div class="step-desc">Copy → Source → Query: <code>@concat('SELECT * FROM dbo.orders WHERE ModifiedDate > ''', activity('LookupOldWatermark').output.firstRow.WatermarkValue, '''')</code></div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Second Lookup — get new max watermark</div><div class="step-desc">After Copy: Lookup → <code>SELECT MAX(ModifiedDate) AS NewWatermark FROM dbo.orders</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Update watermark with Stored Procedure</div><div class="step-desc">SP activity → <code>sp_update_watermark</code> with param <code>@NewWatermark = @{activity('LookupNewWatermark').output.firstRow.NewWatermark}</code></div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Schedule with Tumbling Window Trigger</div><div class="step-desc">Trigger → New → Tumbling Window → recurrence: 1 hour. Guarantees no overlapping windows and safe backfill.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Always update the watermark AFTER a successful copy. If the copy fails, the watermark stays at the previous checkpoint so the next run reprocesses safely.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card adf" id="card-adf-2">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🧩</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Metadata-Driven Pipeline</div>
+    <div class="card-desc">Use a control table to drive dynamic multi-table ingestion — one pipeline handles hundreds of tables without code duplication</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🧩</div><div><div class="detail-title">Metadata-Driven Pipeline</div><div class="detail-desc">Use a control table to drive dynamic multi-table ingestion — one pipeline handles hundreds of tables without code duplication</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Azure Data Factory instance</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Azure SQL control table listing source tables and load configs</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Parameterised linked datasets</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Design the pipeline control table</div><div class="step-desc"><code>CREATE TABLE dbo.pipeline_control (Id INT IDENTITY PRIMARY KEY, SourceSchema NVARCHAR(50), SourceTable NVARCHAR(100), DestContainer NVARCHAR(100), LoadType NVARCHAR(20), IsActive BIT);</code></div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Add Lookup to read active configs</div><div class="step-desc">Lookup → <code>SELECT * FROM dbo.pipeline_control WHERE IsActive = 1</code>. Disable 'First row only'.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Add ForEach over control rows</div><div class="step-desc">ForEach → Items: <code>@activity('LookupConfig').output.value</code>. Batch Count: 5–10. Sequential = false.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Add parameterised Copy inside ForEach</div><div class="step-desc">Copy → Source param: <code>tableName = @item().SourceTable</code>. Sink folder: <code>@concat(item().DestFolder, '/', formatDateTime(utcNow(), 'yyyy/MM/dd'))</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Handle full vs incremental load types</div><div class="step-desc">If Condition → <code>@equals(item().LoadType, 'incremental')</code> → True: Copy with WHERE filter. False: full table copy.</div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Log run results per table</div><div class="step-desc">Script activity → INSERT into run_log with table name, rows copied, timestamp, status.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Store the control table in Azure SQL, not a JSON file. SQL rows can be activated or deactivated at runtime without touching pipeline code.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card adf" id="card-adf-3">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🔄</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">ForEach Loop Pipeline</div>
+    <div class="card-desc">Process multiple files or tables dynamically by iterating over a list with ForEach, enabling parallel execution</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🔄</div><div><div class="detail-title">ForEach Loop Pipeline</div><div class="detail-desc">Process multiple files or tables dynamically by iterating over a list with ForEach, enabling parallel execution</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Azure Data Factory instance</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>ADLS Gen2 source folder with multiple files</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Azure SQL or ADLS Gen2 destination</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Add Get Metadata to list files</div><div class="step-desc">Get Metadata → Dataset: ADLS Gen2 folder → Field list: 'childItems'. Returns array of file objects.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Filter to target file type</div><div class="step-desc">Filter → Items: <code>@activity('GetMetadata').output.childItems</code> → Condition: <code>@endswith(item().name, '.csv')</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Add ForEach over filtered files</div><div class="step-desc">ForEach → Items: <code>@activity('FilterCSVFiles').output.value</code>. Sequential = false, Batch Count = 10.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Configure Copy inside ForEach</div><div class="step-desc">Copy → Source: <code>@concat('landing/', item().name)</code>. Sink: Azure SQL or partitioned ADLS folder.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Log each file result</div><div class="step-desc">Script activity → INSERT into load_log with file name, rows copied, timestamp.</div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Handle empty folder gracefully</div><div class="step-desc">If Condition before ForEach → <code>@greater(length(activity('FilterCSVFiles').output.value), 0)</code> → True: ForEach. False: Set Variable 'No files found'.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Set ForEach Batch Count to 10–15 for typical file volumes. Exceeding 20 risks throttling. Monitor 'Queue duration' in activity run details.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card adf" id="card-adf-4">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🌐</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">REST API Data Ingestion</div>
+    <div class="card-desc">Extract data from paginated REST APIs and land raw JSON responses into Azure Data Lake Storage Gen2</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🌐</div><div><div class="detail-title">REST API Data Ingestion</div><div class="detail-desc">Extract data from paginated REST APIs and land raw JSON responses into Azure Data Lake Storage Gen2</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>REST API endpoint with documented auth (API key, OAuth2)</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>ADLS Gen2 storage account</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>ADF linked service for REST connector</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create REST linked service</div><div class="step-desc">ADF Manage → Linked Services → REST. Base URL: <code>https://api.example.com/v2</code>. Auth: Anonymous / API Key / OAuth2.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Create parameterised REST dataset</div><div class="step-desc">New Dataset → REST → Relative URL parameter: <code>@dataset().relativeUrl</code>. Reusable across endpoints.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Configure pagination in Copy Source</div><div class="step-desc">Copy → Source → Pagination rules: set AbsoluteUrl to <code>$.links.next</code>. ADF auto-follows pages until field is empty.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Set auth headers dynamically</div><div class="step-desc">Copy Source → Additional headers: <code>{"Authorization": "Bearer @{linkedService().apiKey}"}</code>. Store key in Azure Key Vault.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Land raw JSON to ADLS</div><div class="step-desc">Sink → ADLS Gen2 → Format: JSON → path: <code>@concat('raw/api/', formatDateTime(utcNow(), 'yyyy/MM/dd'), '/response.json')</code></div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Schedule and alert on failure</div><div class="step-desc">Schedule Trigger → daily 02:00 UTC. In Monitor → Alert Rule on pipeline failure → notify via email or Teams webhook.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">For OAuth APIs, use ADF's built-in OAuth2 linked service with client credentials flow. ADF auto-refreshes the access token — never manage token expiry manually.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card adf" id="card-adf-5">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">📦</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">JSON to SQL Pipeline</div>
+    <div class="card-desc">Transform semi-structured JSON files from ADLS into flat relational tables in Azure SQL using Mapping Data Flow</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">📦</div><div><div class="detail-title">JSON to SQL Pipeline</div><div class="detail-desc">Transform semi-structured JSON files from ADLS into flat relational tables in Azure SQL using Mapping Data Flow</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>JSON files in ADLS Gen2</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Azure SQL destination with target schema</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>ADF Mapping Data Flow enabled</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Inspect JSON structure</div><div class="step-desc">Open sample in ADLS preview. Identify scalar fields, nested objects, and nested arrays. Arrays need Flatten; objects use dot-notation.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Create Mapping Data Flow with JSON source</div><div class="step-desc">New Data Flow → Source → ADLS Gen2 JSON dataset. Source Options: 'Array of documents' if JSON array, 'Single document' if one object per file.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Flatten nested arrays to rows</div><div class="step-desc">Flatten transformation → Input array: <code>line_items</code>. Each array element becomes its own row, carrying parent fields.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Select and cast required columns</div><div class="step-desc">Derived Column: <code>unit_price = toDecimal(line_items.price, 10, 2)</code>, <code>order_date = toDate(order_date, 'yyyy-MM-dd')</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Add data quality assertions</div><div class="step-desc">Assert transformation → Expect True: <code>!isNull(order_id)</code>, <code>unit_price > 0</code>. Failed rows tagged but still flow to quarantine sink.</div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Write to Azure SQL sink</div><div class="step-desc">Sink → Azure SQL → Update method: Insert (first load) or Upsert on primary key for incremental.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use Data Flow Debug session before running. Click any transformation → Data Preview to inspect rows interactively. Debug uses a small Spark cluster.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card adf" id="card-adf-6">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">⚠️</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Retry & Error Handling</div>
+    <div class="card-desc">Configure retry policies, failure branches, alert webhooks, and structured error logging for robust pipeline operations</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">⚠️</div><div><div class="detail-title">Retry & Error Handling</div><div class="detail-desc">Configure retry policies, failure branches, alert webhooks, and structured error logging for robust pipeline operations</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Existing ADF pipeline</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Azure SQL error log table</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Teams webhook URL (optional)</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Set retry on individual activities</div><div class="step-desc">Activity → Settings → Retry: 3. Interval: 30 seconds. ADF auto-retries transient failures before marking as failed.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Wire up a failure dependency branch</div><div class="step-desc">Drag from the red (Failure) port of Copy activity to a new activity. Executes only on failure — ADF's catch block.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Capture error message in variable</div><div class="step-desc">Failure branch → Set Variable → ErrorMsg → <code>@{activity('CopyData').error.message}</code></div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Send Teams alert</div><div class="step-desc">Web activity → POST → URL: Teams webhook → Body: <code>{"text": "❌ Pipeline @{pipeline().Pipeline} failed: @{variables('ErrorMsg')}"}</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Log error to Azure SQL</div><div class="step-desc">Script activity → <code>INSERT INTO dbo.pipeline_errors (PipelineName, ErrorMessage, FailedAt) VALUES (..., GETDATE())</code></div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Set pipeline timeout</div><div class="step-desc">Pipeline Settings → Timeout: 2 hours. Add cleanup on grey 'On Completion' port — runs whether pipeline succeeded or failed.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use 'On Completion' (grey) for cleanup, 'On Failure' (red) for alerts, 'On Success' (green) for next steps. All three can coexist on the same source activity.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card adf" id="card-adf-7">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🔧</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Data Transformation with Data Flow</div>
+    <div class="card-desc">Perform joins, filters, derived columns, and aggregations visually using ADF Mapping Data Flows backed by Spark</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🔧</div><div><div class="detail-title">Data Transformation with Data Flow</div><div class="detail-desc">Perform joins, filters, derived columns, and aggregations visually using ADF Mapping Data Flows backed by Spark</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Source data in ADLS Gen2 or Azure SQL</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>ADF with Azure Integration Runtime</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Target schema in Azure SQL or ADLS Gen2</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Enable Debug mode</div><div class="step-desc">Data Flow canvas → toggle Debug ON. ADF spins up a Spark cluster (~2 min). Allows row preview at every transformation.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Add and configure Source</div><div class="step-desc">Add Source → ADLS Parquet or Azure SQL. Source Options → Query: <code>SELECT * FROM dbo.sales WHERE sale_year = 2024</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Add Filter transformation</div><div class="step-desc">Filter → Expression: <code>!isNull(customer_id) && amount > 0</code>. Click Data Preview to confirm row count reduction.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Add Derived Column</div><div class="step-desc">Derived Column: <code>full_name = concat(first_name, ' ', last_name)</code>, <code>margin_pct = round((revenue - cost) / revenue * 100, 2)</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Add Aggregate for rollups</div><div class="step-desc">Aggregate → Group By: region, product_category. Aggregates: <code>total_revenue = sum(amount)</code>, <code>order_count = count(order_id)</code></div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Add Sink and run</div><div class="step-desc">Sink → Azure SQL → dbo.sales_summary. Back in pipeline, add Data Flow activity → Publish All → trigger.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use the Inspect tab on each transformation to see column lineage. Invaluable for debugging schema drift before it surfaces at the sink.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card adf" id="card-adf-8">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🔗</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Multi Source Data Integration</div>
+    <div class="card-desc">Combine and join data from Azure SQL, CSV files, and REST API responses into a single unified output dataset</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🔗</div><div><div class="detail-title">Multi Source Data Integration</div><div class="detail-desc">Combine and join data from Azure SQL, CSV files, and REST API responses into a single unified output dataset</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Azure SQL source (customers table)</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>CSV reference file in ADLS Gen2 (regions lookup)</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>REST API data pre-staged to ADLS as JSON</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>ADF Mapping Data Flow</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Pre-stage REST API data</div><div class="step-desc">Run a separate Copy pipeline to land REST JSON to ADLS. Data Flow reads from ADLS faster than from REST directly.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Add three Sources in Data Flow</div><div class="step-desc">Source1: Azure SQL dbo.customers. Source2: ADLS CSV regions.csv. Source3: ADLS JSON api/orders/response.json.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Join SQL and CSV sources</div><div class="step-desc">Join transformation → Left: customers stream → Right: regions stream → Join condition: <code>customers@region_code == regions@code</code>. Type: Left outer.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Join result with JSON stream</div><div class="step-desc">Second Join → Left: previous output → Right: orders JSON stream → Join on customer_id. Type: Left outer.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Add Derived Columns for unified schema</div><div class="step-desc">Derived Column: standardize field names, cast types, add <code>etl_load_date = currentTimestamp()</code></div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Sink to unified Azure SQL table</div><div class="step-desc">Sink → Azure SQL → dbo.unified_customer_orders. Use Upsert on composite key (customer_id + order_date).</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Name each Data Flow stream clearly (customersStream, regionsStream). Ambiguous stream names cause silent column collision bugs in large flows.</div></div></div>
+    </div>
+  </div>
+</details></div></div>
+      </div>
+
+      <!-- ── FABRIC PANEL ── -->
+      <div id="panel-fabric" class="panel">
+        <div id="fabric-content"><div class="section-header"><div class="section-title">Intermediate Patterns</div><div class="section-count">10 patterns</div></div>
+<div class="card-grid"><details class="use-card fabric" id="card-fabric-1">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">📥</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Lakehouse Data Ingestion</div>
+    <div class="card-desc">Ingest CSV or Parquet files into a Fabric Lakehouse using manual upload or pipeline</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">📥</div><div><div class="detail-title">Lakehouse Data Ingestion</div><div class="detail-desc">Ingest CSV or Parquet files into a Fabric Lakehouse using manual upload or pipeline</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Microsoft Fabric trial workspace</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>A sample CSV or Parquet file ready</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create a Workspace</div><div class="step-desc">Go to app.fabric.microsoft.com → New Workspace → name it (e.g. FabricDemo). Container for all Fabric items.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Create a Lakehouse</div><div class="step-desc">Inside workspace → New → Lakehouse → name it (e.g. RawLakehouse). Fabric creates OneLake storage automatically.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Upload files</div><div class="step-desc">Lakehouse explorer → right-click Files → Upload → select CSV/Parquet. Files land under /Files/ in OneLake.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Load to Delta Tables</div><div class="step-desc">Right-click uploaded file → Load to Delta Table. Fabric auto-infers schema and creates a managed Delta table.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Verify ingestion</div><div class="step-desc">Click table name in Tables view. Use preview to confirm columns and row counts. Check for nulls or type issues.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">For large CSV files, use the Data Pipeline Copy Activity instead of manual upload — it handles chunking automatically.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-2">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🔄</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Fabric Data Pipeline</div>
+    <div class="card-desc">Build a pipeline to orchestrate data movement between sources and destinations in Fabric</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🔄</div><div><div class="detail-title">Fabric Data Pipeline</div><div class="detail-desc">Build a pipeline to orchestrate data movement between sources and destinations in Fabric</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Workspace created</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Source and destination (Lakehouse or Warehouse) ready</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">New Data Pipeline</div><div class="step-desc">Workspace → New → Data Pipeline → name it IngestPipeline.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Add Copy Data activity</div><div class="step-desc">Pipeline canvas → Add activity → Copy data. Primary activity for moving data between connectors.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Configure Source</div><div class="step-desc">Source tab → New → choose connector (HTTP, Azure Blob, ADLS Gen2) → set URL, file format, credentials.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Configure Destination</div><div class="step-desc">Destination tab → Lakehouse or Warehouse → select workspace and Lakehouse → set table name or file path.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Set copy method</div><div class="step-desc">Choose Bulk insert for first load or Upsert for merge logic. Enable schema mapping if column names differ.</div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Run and monitor</div><div class="step-desc">Click Run → Monitor tab → check each activity's status, rows read/written, and duration.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use the Validate button before running to catch misconfigured connections early.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-3">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">📦</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Notebook Data Transformation</div>
+    <div class="card-desc">Transform raw data using PySpark notebooks attached to a Fabric Lakehouse</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">📦</div><div><div class="detail-title">Notebook Data Transformation</div><div class="detail-desc">Transform raw data using PySpark notebooks attached to a Fabric Lakehouse</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Lakehouse with raw data</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Notebook runtime available (Spark)</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create a Notebook</div><div class="step-desc">Workspace → New → Notebook. Fabric auto-attaches a Spark session. Default language: PySpark.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Attach Lakehouse</div><div class="step-desc">Left panel → Add Lakehouse → select Lakehouse. Tables and files accessible via sidebar explorer.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Read raw data</div><div class="step-desc">CSV: <code>df = spark.read.format("csv").option("header","true").load("Files/yourfile.csv")</code>. Delta: <code>df = spark.read.table("tablename")</code></div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Transform data</div><div class="step-desc">Apply transformations: <code>df.withColumn("year", year(col("date_col")))</code>, <code>df.filter()</code>, <code>df.groupBy().agg()</code>, <code>df.dropna()</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Write output</div><div class="step-desc"><code>df.write.format("delta").mode("overwrite").saveAsTable("silver_table")</code></div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Run all cells</div><div class="step-desc">Click Run all. Check output cells for errors. Spark job UI link shows executor logs.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use %pip install or mssparkutils in Fabric notebooks — standard pip installs persist only for the session.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-4">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🔗</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Lakehouse to Warehouse Load</div>
+    <div class="card-desc">Move processed Silver/Gold data from Lakehouse to Fabric Warehouse for T-SQL analytics</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🔗</div><div><div class="detail-title">Lakehouse to Warehouse Load</div><div class="detail-desc">Move processed Silver/Gold data from Lakehouse to Fabric Warehouse for T-SQL analytics</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Silver/Gold table in Lakehouse</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Fabric Warehouse created</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create a Warehouse</div><div class="step-desc">Workspace → New → Warehouse → GoldWarehouse. T-SQL-compatible SQL endpoint.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Use COPY INTO (T-SQL)</div><div class="step-desc"><code>COPY INTO [dbo].[sales] FROM 'https://onelake.blob.fabric.microsoft.com/.../Tables/silver_table' WITH (FILE_TYPE='PARQUET')</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Or use Pipeline Copy Activity</div><div class="step-desc">Pipeline → Copy data: Source = Lakehouse table, Destination = Warehouse table. Map columns in schema mapping tab.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Or use Shortcut</div><div class="step-desc">Warehouse → New Shortcut → OneLake → navigate to Lakehouse table. Virtual link — no data movement, query directly.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Verify with SQL</div><div class="step-desc">Run <code>SELECT TOP 100 * FROM dbo.sales</code> in Warehouse query editor to confirm rows loaded.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Shortcuts are zero-copy — best for read-heavy analytics. Use COPY INTO when you need independent Warehouse storage with write access.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-5">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">📊</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Create Delta Tables</div>
+    <div class="card-desc">Convert raw CSV or Parquet files into versioned Delta format tables in Fabric Lakehouse</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">📊</div><div><div class="detail-title">Create Delta Tables</div><div class="detail-desc">Convert raw CSV or Parquet files into versioned Delta format tables in Fabric Lakehouse</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Raw files uploaded to Lakehouse /Files/</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Open a Notebook</div><div class="step-desc">Attach it to the Lakehouse containing raw files.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Read raw file</div><div class="step-desc"><code>df = spark.read.format("csv").option("header","true").inferSchema("true").load("Files/orders.csv")</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Cast and clean schema</div><div class="step-desc"><code>df = df.withColumn("order_date", to_date(col("order_date"),"yyyy-MM-dd")).withColumn("amount", col("amount").cast("double"))</code></div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Write as Delta table</div><div class="step-desc"><code>df.write.format("delta").mode("overwrite").option("overwriteSchema","true").saveAsTable("orders_delta")</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Verify Delta metadata</div><div class="step-desc"><code>spark.sql("DESCRIBE HISTORY orders_delta").show()</code> — confirms Delta format with version history.</div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">View in Lakehouse explorer</div><div class="step-desc">Switch to Lakehouse view — table appears under Tables with row count and column preview.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Always set inferSchema=false and cast explicitly to avoid silent type mismatches in downstream queries.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-6">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🧩</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Parameterized Data Pipeline</div>
+    <div class="card-desc">Use parameters to dynamically process different datasets without code changes</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🧩</div><div><div class="detail-title">Parameterized Data Pipeline</div><div class="detail-desc">Use parameters to dynamically process different datasets without code changes</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Existing pipeline</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Multiple source folders or datasets</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Add Pipeline Parameters</div><div class="step-desc">Pipeline → Parameters tab → New → add: SourceFolder (string), TableName (string).</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Reference in Copy Activity</div><div class="step-desc">Copy Activity source path → Add Dynamic Content → <code>@pipeline().parameters.SourceFolder</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Add ForEach activity</div><div class="step-desc">ForEach → Items: JSON array or lookup output → inside ForEach, drag your Copy activity.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Trigger with parameters</div><div class="step-desc">Trigger Now → enter parameter values in dialog. Each run uses specific values — no code changes.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Test multiple runs</div><div class="step-desc">Run 3 times with different SourceFolder values. In Monitor, verify each run processed its own folder.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use a Lookup activity before ForEach to pull parameter sets from a control table in your Lakehouse — enables fully config-driven pipelines.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-7">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">📁</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Dynamic Folder Processing</div>
+    <div class="card-desc">Process partitioned folders like year/month/day using wildcard paths and partition pruning</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">📁</div><div><div class="detail-title">Dynamic Folder Processing</div><div class="detail-desc">Process partitioned folders like year/month/day using wildcard paths and partition pruning</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Partitioned folder structure in Lakehouse Files (e.g. /2024/01/15/)</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Read with wildcard path</div><div class="step-desc"><code>df = spark.read.format("parquet").load("Files/data/*/*/*.parquet")</code> — wildcards match year/month/day subdirectories.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Extract partition columns</div><div class="step-desc"><code>df.withColumn("src", input_file_name()).withColumn("year", regexp_extract("src", r"/(\d{4})/", 1))</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Filter specific partition</div><div class="step-desc"><code>df = spark.read.load("Files/data/2024/01/*.parquet")</code> — only January 2024 data.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Write partitioned Delta table</div><div class="step-desc"><code>df.write.format("delta").partitionBy("year","month").mode("append").saveAsTable("partitioned_events")</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Use pipeline with date parameters</div><div class="step-desc">Pipeline parameters year and month → build path: <code>Files/data/@{pipeline().parameters.year}/@{pipeline().parameters.month}/</code></div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use spark.read.option('basePath','Files/data/') when reading partition subfolders so Spark correctly infers partition columns.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-8">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🔄</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Data Refresh Pipeline</div>
+    <div class="card-desc">Automate end-to-end refresh of Lakehouse tables and semantic models</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🔄</div><div><div class="detail-title">Data Refresh Pipeline</div><div class="detail-desc">Automate end-to-end refresh of Lakehouse tables and semantic models</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Existing pipeline or semantic model</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Workspace access</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create a master pipeline</div><div class="step-desc">New pipeline → activities: Copy → Notebook → Semantic model refresh. Chain with success conditions.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Add Notebook activity</div><div class="step-desc">Activity → Notebook → select transformation notebook. Set retry = 1 and timeout.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Add Semantic model refresh</div><div class="step-desc">Fabric activity → Refresh semantic model → pick model. Triggers DAX cache refresh.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Schedule the pipeline</div><div class="step-desc">Pipeline → Schedule → set frequency (daily/hourly) and timezone. Fabric native schedule trigger.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Set up alerts</div><div class="step-desc">Monitor → Pipeline runs → Bell icon → email alert on failure.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Chain pipelines using Execute Pipeline activity rather than one monolithic pipeline — easier to debug and retry individual stages.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-9">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">📈</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Data Aggregation Pipeline</div>
+    <div class="card-desc">Aggregate transactional data (e.g. Adidas Sales) into monthly/product-level analytics tables</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">📈</div><div><div class="detail-title">Data Aggregation Pipeline</div><div class="detail-desc">Aggregate transactional data (e.g. Adidas Sales) into monthly/product-level analytics tables</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Raw transaction Delta table in Lakehouse (e.g. adidas_sales)</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Read transaction table</div><div class="step-desc"><code>df = spark.read.table("adidas_sales")</code> or load from Adidas_US_Sales_Datasets.csv as Delta first.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Group and aggregate</div><div class="step-desc"><code>agg_df = df.groupBy(date_trunc("month", col("Invoice_Date")).alias("month"), col("Region")).agg(sum("Total_Sales").alias("total_revenue"), count("*").alias("txn_count"), avg("Operating_Profit").alias("avg_profit"))</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Handle nulls</div><div class="step-desc"><code>agg_df = agg_df.fillna(0, subset=["total_revenue","avg_profit"])</code></div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Write aggregated table</div><div class="step-desc"><code>agg_df.write.format("delta").mode("overwrite").saveAsTable("monthly_regional_revenue")</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Validate counts</div><div class="step-desc">Cross-check: row count of source vs sum of txn_count in aggregated table.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use .repartition(1) before writing small aggregated tables to avoid many small Parquet files in OneLake.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-10">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">📊</span><span class="card-level-badge intermediate">intermediate</span></div>
+    <div class="card-title">Build Semantic Model</div>
+    <div class="card-desc">Create a Power BI semantic model with DAX measures for reporting and analytics</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">📊</div><div><div class="detail-title">Build Semantic Model</div><div class="detail-desc">Create a Power BI semantic model with DAX measures for reporting and analytics</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Gold Delta tables in Lakehouse or Warehouse</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Open Lakehouse SQL endpoint</div><div class="step-desc">Lakehouse → click SQL analytics endpoint (top right). Read-only T-SQL view of all Delta tables.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Create Semantic model</div><div class="step-desc">SQL endpoint → New semantic model → name it SalesModel → select tables (sales, products, calendar).</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Define relationships</div><div class="step-desc">Model view → drag FK column to PK column. Set cardinality (many-to-one) and cross-filter direction.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Add DAX measures</div><div class="step-desc">New measure: <code>Total Revenue = SUM(sales[amount])</code>, <code>Growth % = DIVIDE([Total Revenue] - [Prior Revenue], [Prior Revenue])</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Publish and connect Power BI</div><div class="step-desc">Save model → Open report. Power BI auto-connects. Measures and relationships immediately available in visuals.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Add a dedicated Calendar table with contiguous dates and mark it as a Date table — required for DAX time intelligence functions.</div></div></div>
+    </div>
+  </div>
+</details></div>
+<div class="section-header" style="margin-top:32px;"><div class="section-title">Advanced Patterns</div><div class="section-count">7 patterns</div></div>
+<div class="card-grid"><details class="use-card fabric" id="card-fabric-11">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🥇</span><span class="card-level-badge advanced">advanced</span></div>
+    <div class="card-title">Medallion Architecture</div>
+    <div class="card-desc">Implement Bronze → Silver → Gold layers using Lakehouses and chained pipelines</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🥇</div><div><div class="detail-title">Medallion Architecture</div><div class="detail-desc">Implement Bronze → Silver → Gold layers using Lakehouses and chained pipelines</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Fabric workspace</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Sample raw data (CSV or Parquet)</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create three Lakehouses</div><div class="step-desc">New → Lakehouse × 3: BronzeLakehouse, SilverLakehouse, GoldLakehouse. Each is a data quality tier.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Bronze: raw ingestion</div><div class="step-desc">Pipeline: Copy raw files as-is into BronzeLakehouse /Files/. No transformation — preserve source fidelity. Add load_timestamp only.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Silver: clean and conform</div><div class="step-desc">Notebook reading Bronze: cast types, standardize nulls, deduplicate. Write: <code>df.write.format("delta").mode("overwrite").saveAsTable("silver_orders")</code></div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Gold: business aggregations</div><div class="step-desc">Notebook reading Silver: join dimensions, calculate KPIs, aggregate by business grain. Write to GoldLakehouse.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Chain in master pipeline</div><div class="step-desc">Execute Pipeline (Bronze) → on success → Execute Pipeline (Silver) → on success → Execute Pipeline (Gold).</div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Add data quality checks</div><div class="step-desc">Between Bronze → Silver, Notebook asserts: row count > 0, no nulls in key columns, date ranges valid. Fail pipeline on error.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Create a Shortcut in GoldLakehouse pointing to SilverLakehouse tables — avoids data copies when Gold only needs light filtering of Silver.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-12">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🔁</span><span class="card-level-badge advanced">advanced</span></div>
+    <div class="card-title">Incremental Data Processing</div>
+    <div class="card-desc">Process only new or updated data using Delta MERGE and watermark strategy</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🔁</div><div><div class="detail-title">Incremental Data Processing</div><div class="detail-desc">Process only new or updated data using Delta MERGE and watermark strategy</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Source Delta table with a timestamp column</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Control table for watermarks</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create watermark control table</div><div class="step-desc"><code>spark.sql("CREATE TABLE IF NOT EXISTS watermark_ctrl (table_name STRING, last_load_ts TIMESTAMP)")</code></div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Read current watermark</div><div class="step-desc"><code>wm = spark.sql("SELECT last_load_ts FROM watermark_ctrl WHERE table_name='orders'").collect()[0][0]</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Filter source to new rows only</div><div class="step-desc"><code>new_df = spark.read.table("bronze_orders").filter(col("updated_at") > wm)</code></div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Upsert to Silver using Delta MERGE</div><div class="step-desc"><code>DeltaTable.forName(spark,"silver_orders").alias("t").merge(new_df.alias("s"), "t.order_id = s.order_id").whenMatchedUpdateAll().whenNotMatchedInsertAll().execute()</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Update watermark</div><div class="step-desc"><code>new_wm = new_df.agg({"updated_at":"max"}).collect()[0][0]; spark.sql(f"UPDATE watermark_ctrl SET last_load_ts='{new_wm}' WHERE table_name='orders'")</code></div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Always update the watermark AFTER a successful merge, never before, to prevent data loss on failure.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-13">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">⚡</span><span class="card-level-badge advanced">advanced</span></div>
+    <div class="card-title">Notebook Orchestration</div>
+    <div class="card-desc">Trigger and chain notebooks within Fabric pipelines with parameter passing and output capture</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">⚡</div><div><div class="detail-title">Notebook Orchestration</div><div class="detail-desc">Trigger and chain notebooks within Fabric pipelines with parameter passing and output capture</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Multiple transformation notebooks</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Fabric Data Pipeline</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Add Notebook activity</div><div class="step-desc">Pipeline canvas → Activities → Notebook → select workspace and notebook name.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Pass parameters</div><div class="step-desc">Notebook activity Settings → Base parameters → add key/value pairs. First notebook cell must be tagged 'parameters': <code>input_table = "bronze_orders"</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Chain multiple notebooks</div><div class="step-desc">Connect Notebook A → Notebook B with success condition arrows. On failure → send alert or log error.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Parallel execution with ForEach</div><div class="step-desc">ForEach → items = list of table names → inside loop → Notebook activity. Fabric runs iterations in parallel.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Capture notebook output</div><div class="step-desc">Final cell: <code>mssparkutils.notebook.exit('{"rows_processed":1000}')</code>. Pipeline: <code>@activity('NotebookName').output.result.exitValue</code></div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Set notebook Timeout in the activity settings — without it, a hung Spark session blocks the whole pipeline indefinitely.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-14">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">📊</span><span class="card-level-badge advanced">advanced</span></div>
+    <div class="card-title">End-to-End Analytics Pipeline</div>
+    <div class="card-desc">Ingest, transform through Medallion layers, model, and visualize in Power BI — full stack</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">📊</div><div><div class="detail-title">End-to-End Analytics Pipeline</div><div class="detail-desc">Ingest, transform through Medallion layers, model, and visualize in Power BI — full stack</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Raw data source</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Power BI browser access</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Ingest: Data Pipeline</div><div class="step-desc">Copy Activity → land raw data in BronzeLakehouse as Delta table. Schedule daily.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Transform: Medallion Notebooks</div><div class="step-desc">Bronze → Silver notebook (clean/cast) → Gold notebook (join dimensions, KPI calcs). Chain in pipeline.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Model: Semantic model</div><div class="step-desc">Semantic model on GoldLakehouse SQL endpoint. Add relationships and DAX measures.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Report: Power BI</div><div class="step-desc">Open semantic model → Create report. Revenue line chart, bar chart by product category, KPI cards.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Publish and schedule refresh</div><div class="step-desc">Publish to Fabric workspace. Set semantic model scheduled refresh to match pipeline cadence.</div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Share with stakeholders</div><div class="step-desc">Workspace → Share report link → set viewer access.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use Direct Lake mode — semantic model reads Delta tables directly from OneLake without import. Fastest refresh, no data copy.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-15">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🧠</span><span class="card-level-badge advanced">advanced</span></div>
+    <div class="card-title">Data Quality Framework</div>
+    <div class="card-desc">Implement reusable PySpark validation checks with failure escalation and logging</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🧠</div><div><div class="detail-title">Data Quality Framework</div><div class="detail-desc">Implement reusable PySpark validation checks with failure escalation and logging</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Bronze Delta table</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Silver target table defined</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Define quality rules as config</div><div class="step-desc"><code>rules = [{"col":"order_id","check":"not_null"},{"col":"amount","check":"positive"},{"col":"order_date","check":"not_future"}]</code></div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Build assertion functions</div><div class="step-desc"><code>def check_not_null(df, col_name): return df.filter(col(col_name).isNull()).count() == 0</code></div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Run checks and collect results</div><div class="step-desc"><code>results = []; [results.append({"rule":r, "passed":globals()[f"check_{r['check']}"](df, r["col"])}) for r in rules]; failed = [r for r in results if not r["passed"]]</code></div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Log results to Delta table</div><div class="step-desc"><code>spark.createDataFrame(results).write.format("delta").mode("append").saveAsTable("dq_results_log")</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Fail pipeline on violations</div><div class="step-desc"><code>if len(failed) > 0: mssparkutils.notebook.exit(f"DQ FAILED: {failed}")</code></div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Build a Power BI report on dq_results_log to track data quality trends over time — makes quality visible to stakeholders.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-16">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">📦</span><span class="card-level-badge advanced">advanced</span></div>
+    <div class="card-title">Large Dataset Processing</div>
+    <div class="card-desc">Handle large datasets using Spark optimization — partitioning, caching, ZORDER, and VACUUM</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">📦</div><div><div class="detail-title">Large Dataset Processing</div><div class="detail-desc">Handle large datasets using Spark optimization — partitioning, caching, ZORDER, and VACUUM</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Large Delta table (>1M rows)</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Spark notebook</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Check current performance</div><div class="step-desc"><code>df = spark.read.table("large_table"); df.explain(True)</code> — see physical plan before optimizing.</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Partition correctly</div><div class="step-desc">Set: <code>spark.conf.set("spark.sql.shuffle.partitions", "400")</code> for joins on large tables.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Use partition pruning</div><div class="step-desc">Filter on partition columns first: <code>df.filter((col("year")==2024) & (col("month")==1))</code> — Spark skips unrelated Parquet files.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Cache hot DataFrames</div><div class="step-desc"><code>df.cache(); df.count()</code> — force materialization into memory. Cache only reused DataFrames.</div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Optimize Delta table</div><div class="step-desc"><code>spark.sql("OPTIMIZE large_table ZORDER BY (customer_id, order_date)")</code> — co-locates related rows for faster filters.</div></div></div><div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Vacuum old files</div><div class="step-desc"><code>spark.sql("VACUUM large_table RETAIN 168 HOURS")</code> — removes old Delta version files. Never go below 168h in production.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Use .explain('cost') to see row count estimates at each stage — a wrong estimate usually means missing statistics. Run ANALYZE TABLE to fix.</div></div></div>
+    </div>
+  </div>
+</details><details class="use-card fabric" id="card-fabric-17">
+  <summary class="card-summary">
+    <div class="card-top"><span class="card-icon">🔐</span><span class="card-level-badge advanced">advanced</span></div>
+    <div class="card-title">Secure Data Access</div>
+    <div class="card-desc">Implement role-based access control and row-level security in Fabric Warehouse</div>
+  </summary>
+  <div class="detail-panel">
+    <div class="detail-header"><div class="detail-icon">🔐</div><div><div class="detail-title">Secure Data Access</div><div class="detail-desc">Implement role-based access control and row-level security in Fabric Warehouse</div></div></div>
+    <div class="detail-body">
+      <div class="prereqs-block"><div class="prereqs-label">Prerequisites</div><div class="prereq-item"><div class="prereq-dot"></div><span>Fabric workspace Admin or Member role</span></div><div class="prereq-item"><div class="prereq-dot"></div><span>Users or groups in Azure AD</span></div></div>
+      <div class="steps-label">Steps</div><div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Workspace-level roles</div><div class="step-desc">Workspace Settings → Manage access → assign roles: Admin (full), Member (contribute), Contributor (edit), Viewer (read only).</div></div></div><div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Item-level sharing</div><div class="step-desc">Right-click Lakehouse/Warehouse/Report → Manage permissions → share with specific users.</div></div></div><div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Row-level security in Warehouse</div><div class="step-desc">Create security schema and function filtering by user. Apply to tables using CREATE SECURITY POLICY.</div></div></div><div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Column-level security</div><div class="step-desc">DENY SELECT on sensitive columns: <code>DENY SELECT ON dbo.employees(salary) TO reporter_role</code></div></div></div><div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Audit with Monitor</div><div class="step-desc">Fabric workspace Monitor tab shows all pipeline runs, notebook executions, and warehouse queries with user identity.</div></div></div>
+      <div class="tip-block"><div class="tip-icon">💡</div><div class="tip-content"><div class="tip-label">Pro Tip</div><div class="tip-text">Start with workspace roles for coarse control, then layer item-level sharing and RLS for fine-grained data segmentation.</div></div></div>
+    </div>
+  </div>
+</details></div></div>
+      </div>
+
+      <!-- ── DATASETS PANEL ── -->
+      <div id="panel-datasets" class="panel">
+        <div class="dataset-intro">
+          <div class="dataset-intro-title">📦 Training Datasets — How They Connect</div>
+          <div class="dataset-intro-text">
+            All datasets below are used in the patterns covered in this guide. The <strong>customer_2025-07-10/11/12.csv</strong> files are the primary SCD Type 1 training set. The <strong>employee/department</strong> CSVs power the ADF SQL migration project. The <strong>Adidas Sales</strong> dataset is ideal for Fabric aggregation and Power BI exercises.
+          </div>
+        </div>
+
+        <div class="dataset-grid">
+
+          <!-- Customer SCD Dataset -->
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon csv">👤</div>
+              <div>
+                <div class="dataset-name">customer_2025-07-10/11/12.csv</div>
+                <div class="dataset-format">3 CSV files · SCD Type 1 Training Set</div>
+              </div>
+            </div>
+            <div class="dataset-body">
+              <div class="data-preview">
+                <table class="data-table">
+                  <thead><tr><th>customer_id</th><th>name</th><th>email</th><th>address</th><th>file_date</th></tr></thead>
+                  <tbody>
+                    <tr><td>1</td><td>John Doe</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b414443456b4e534a465b474e05484446">[email&#160;protected]</a></td><td>New York</td><td>2025-07-10</td></tr>
+                    <tr><td>2</td><td>Jane Smith</td><td>jane.smith@…</td><td>California</td><td>2025-07-10</td></tr>
+                    <tr><td>2</td><td>Jane Smith</td><td>jane.smith@…</td><td><strong style="color:#F5A623">Los Angeles</strong></td><td>2025-07-11</td></tr>
+                    <tr><td>1</td><td><strong style="color:#F5A623">John D</strong></td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="62080d0a0c22071a030f120e074c010d0f">[email&#160;protected]</a></td><td>New York</td><td>2025-07-12</td></tr>
+                    <tr><td>5</td><td>Eve Black</td><td>eve.black@…</td><td>Florida</td><td>2025-07-12</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="dataset-use-label">Training Purpose</div>
+              <div class="dataset-use-text">SCD Type 1 UPSERT simulation. Customer 2 (Jane) changes address on day 11 → triggers UPDATE. Customer 1 (John) changes name on day 12 → triggers UPDATE. Customers 4 & 5 are new → trigger INSERT. Use with <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">sp_upsert_dim_customer_scd1</code> procedure.</div>
+            </div>
+          </div>
+
+          <!-- Employee Dataset -->
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon csv">👥</div>
+              <div>
+                <div class="dataset-name">emp_1.csv / emp_2.csv</div>
+                <div class="dataset-format">2 CSV files · Employee Records</div>
+              </div>
+            </div>
+            <div class="dataset-body">
+              <div class="data-preview">
+                <table class="data-table">
+                  <thead><tr><th>emp_id</th><th>name</th><th>salary</th><th>address</th><th>loc</th></tr></thead>
+                  <tbody>
+                    <tr><td>1</td><td>manish</td><td>10000</td><td>india</td><td>—</td></tr>
+                    <tr><td>2</td><td>rani</td><td>20000</td><td>usa</td><td>—</td></tr>
+                    <tr><td>3</td><td>rinku</td><td>55000</td><td>india</td><td>—</td></tr>
+                    <tr><td>4</td><td>neha</td><td>12000</td><td>usa</td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="dataset-use-label">Training Purpose</div>
+              <div class="dataset-use-text">Used in ADF multi-source ingestion and ForEach patterns. Join with <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">emp_location.csv</code> to practice left-join enrichment in Mapping Data Flow. Also feed the SQL migration project (Employee1 table).</div>
+            </div>
+          </div>
+
+          <!-- Department Dataset -->
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon csv">🏢</div>
+              <div>
+                <div class="dataset-name">department.csv / department_1.csv</div>
+                <div class="dataset-format">2 CSV files · Dimension Table</div>
+              </div>
+            </div>
+            <div class="dataset-body">
+              <div class="data-preview">
+                <table class="data-table">
+                  <thead><tr><th>user</th><th>department</th><th>designation</th></tr></thead>
+                  <tbody>
+                    <tr><td>1</td><td>it</td><td>software</td></tr>
+                    <tr><td>2</td><td>sales</td><td>data analyst</td></tr>
+                    <tr><td>3</td><td>hr</td><td>manager</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="dataset-use-label">Training Purpose</div>
+              <div class="dataset-use-text">Dimension table for joining against employee records. Practice: loading with ADF ForEach, joining in PySpark with <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">emp_id = user</code>, and building a Silver-layer star schema in Fabric Lakehouse.</div>
+            </div>
+          </div>
+
+          <!-- Adidas Sales -->
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon csv">👟</div>
+              <div>
+                <div class="dataset-name">Adidas_US_Sales_Datasets.csv</div>
+                <div class="dataset-format">CSV · US Sales Transactions 2020–2021</div>
+              </div>
+            </div>
+            <div class="dataset-body">
+              <div class="data-preview">
+                <table class="data-table">
+                  <thead><tr><th>Retailer</th><th>Region</th><th>Product</th><th>Total Sales</th><th>Op. Margin</th></tr></thead>
+                  <tbody>
+                    <tr><td>Foot Locker</td><td>Northeast</td><td>Men's Street</td><td>600,000</td><td>50%</td></tr>
+                    <tr><td>Foot Locker</td><td>Northeast</td><td>Men's Athletic</td><td>500,000</td><td>30%</td></tr>
+                    <tr><td>West Gear</td><td>West</td><td>Women's Apparel</td><td>—</td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="dataset-use-label">Training Purpose</div>
+              <div class="dataset-use-text">Best dataset for Fabric aggregation exercises. Use in <strong>Data Aggregation Pipeline</strong> pattern: group by Region + Product, sum Total Sales, calculate avg Operating Margin. Build Power BI bar charts by product category and region KPI cards.</div>
+            </div>
+          </div>
+
+          <!-- COVID JSON -->
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon json">🦠</div>
+              <div>
+                <div class="dataset-name">covid.json</div>
+                <div class="dataset-format">JSON · Single Document · COVID-19 Record</div>
+              </div>
+            </div>
+            <div class="dataset-body">
+              <div class="data-preview">
+                <table class="data-table">
+                  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+                  <tbody>
+                    <tr><td>date_rep</td><td>2020-07-24</td></tr>
+                    <tr><td>cases</td><td>13</td></tr>
+                    <tr><td>deaths</td><td>0</td></tr>
+                    <tr><td>countries_and_territories</td><td>Afghanistan</td></tr>
+                    <tr><td>continent_exp</td><td>Asia</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="dataset-use-label">Training Purpose</div>
+              <div class="dataset-use-text">Ideal for the <strong>JSON to SQL Pipeline</strong> ADF pattern. Practice reading nested JSON with Mapping Data Flow, casting <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">load_date</code> to TIMESTAMP, and writing flat rows to Azure SQL.</div>
+            </div>
+          </div>
+
+          <!-- SQL Scripts -->
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon sql">🗄️</div>
+              <div>
+                <div class="dataset-name">data_migration_adf_project_sql_script.txt</div>
+                <div class="dataset-format">SQL · Employee1 Table Creation + Data</div>
+              </div>
+            </div>
+            <div class="dataset-body">
+              <div class="data-preview">
+                <table class="data-table">
+                  <thead><tr><th>EmployeeId</th><th>Name</th><th>Salary</th><th>Department</th></tr></thead>
+                  <tbody>
+                    <tr><td>5</td><td>Priya Sharma</td><td>45000</td><td>1</td></tr>
+                    <tr><td>6</td><td>Rahul Patel</td><td>65000</td><td>2</td></tr>
+                    <tr><td>7</td><td>Nisha Gupta</td><td>55000</td><td>3</td></tr>
+                    <tr><td>8</td><td>Vikram Singh</td><td>75000</td><td>4</td></tr>
+                    <tr><td>9</td><td>Aarti Desai</td><td>50000</td><td>1</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="dataset-use-label">Training Purpose</div>
+              <div class="dataset-use-text">Source for the ADF <strong>Metadata-Driven Pipeline</strong> pattern. Add this table to your pipeline_control table and practice dynamic ingestion. Also pairs with <strong>Incremental Load</strong> pattern using Salary or EmployeeId as a watermark.</div>
+            </div>
+          </div>
+
+          <!-- fabric_scd_type1_setup.sql -->
+          <div class="dataset-card">
+            <div class="dataset-card-header">
+              <div class="dataset-icon sql">⚙️</div>
+              <div>
+                <div class="dataset-name">fabric_scd_type1_setup.sql</div>
+                <div class="dataset-format">SQL · Fabric Warehouse · SCD Stored Procedure</div>
+              </div>
+            </div>
+            <div class="dataset-body">
+              <div class="data-preview">
+                <table class="data-table">
+                  <thead><tr><th>Object</th><th>Type</th><th>Purpose</th></tr></thead>
+                  <tbody>
+                    <tr><td>dim_customer</td><td>TABLE</td><td>Target dimension</td></tr>
+                    <tr><td>stg_customer</td><td>TABLE</td><td>Staging from CSV</td></tr>
+                    <tr><td>sp_upsert_dim_customer_scd1</td><td>PROCEDURE</td><td>UPDATE + INSERT logic</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="dataset-use-label">Training Purpose</div>
+              <div class="dataset-use-text">Full SCD Type 1 implementation. Run <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">sp_upsert_dim_customer_scd1</code> after each daily CSV load (Jul 10→11→12) to see the overwrite-in-place behaviour. See the SCD Deep Dive tab for the full walkthrough.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── SCD PANEL ── -->
+      <div id="panel-scd" class="panel">
+        <div class="scd-hero">
+          <div class="scd-badge">📖 Deep Dive</div>
+          <div class="scd-title">SCD Type 1 — Overwrite in Place</div>
+          <div class="scd-desc">
+            Slowly Changing Dimension Type 1 keeps only the <strong>latest version</strong> of a record. No history is retained — when an attribute changes, the old value is overwritten. This guide uses the <code style="font-family:var(--font-mono);font-size:12px;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:3px;">customer_2025-07-10/11/12.csv</code> files and the <code style="font-family:var(--font-mono);font-size:12px;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:3px;">sp_upsert_dim_customer_scd1</code> stored procedure from the project.
+          </div>
+        </div>
+
+        <!-- Flow -->
+        <div class="section-header" style="margin-top:8px;">
+          <div class="section-title">📐 Pipeline Flow</div>
+        </div>
+        <div class="flow-diagram" style="margin-bottom:28px;">
+          <div class="flow-box">
+            <div class="flow-box-label">📁 Daily CSV</div>
+            <div class="flow-box-sub">customer_2025-07-*.csv</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color:rgba(0,120,212,0.4);">
+            <div class="flow-box-label" style="color:var(--accent-adf);">ADF Copy</div>
+            <div class="flow-box-sub">Truncate + load</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div class="flow-box-label">📦 stg_customer</div>
+            <div class="flow-box-sub">Staging table</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color:rgba(245,166,35,0.4);">
+            <div class="flow-box-label" style="color:var(--accent-orange);">Set file_date</div>
+            <div class="flow-box-sub">From filename</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color:rgba(29,184,135,0.4);">
+            <div class="flow-box-label" style="color:var(--accent-green);">sp_upsert</div>
+            <div class="flow-box-sub">UPDATE + INSERT</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color:rgba(123,63,228,0.4);">
+            <div class="flow-box-label" style="color:#A97CF0;">dim_customer</div>
+            <div class="flow-box-sub">Final dimension</div>
+          </div>
+        </div>
+
+        <!-- Step cards -->
+        <div class="section-header">
+          <div class="section-title">🗂️ Step-by-Step Setup</div>
+        </div>
+        <div class="scd-steps-grid" style="margin-bottom:28px;">
+          <div class="scd-step-card">
+            <div class="scd-step-num">01</div>
+            <div class="scd-step-title">Create dim_customer & stg_customer tables</div>
+            <div class="scd-step-desc">Run the CREATE TABLE statements in Fabric Warehouse. <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">dim_customer</code> is the target dimension. <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">stg_customer</code> is truncated and reloaded each pipeline run.</div>
+          </div>
+          <div class="scd-step-card">
+            <div class="scd-step-num">02</div>
+            <div class="scd-step-title">ADF: Extract date from filename</div>
+            <div class="scd-step-desc">In ForEach, use the ADF expression <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">@formatDateTime(substring(item().name, 9, 10), 'yyyy-MM-dd')</code> to parse <em>2025-07-10</em> from the filename and store it as <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">var_file_date</code>.</div>
+          </div>
+          <div class="scd-step-card">
+            <div class="scd-step-num">03</div>
+            <div class="scd-step-title">Load CSV into stg_customer</div>
+            <div class="scd-step-desc">Copy Activity: source = ADLS CSV file, sink = <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">stg_customer</code> with <strong>Truncate</strong> pre-copy script. Then run a Script activity to SET <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">file_date</code> = the extracted date variable.</div>
+          </div>
+          <div class="scd-step-card">
+            <div class="scd-step-num">04</div>
+            <div class="scd-step-title">Execute sp_upsert_dim_customer_scd1</div>
+            <div class="scd-step-desc">Stored Procedure activity calls the SP. It does: (1) UPDATE existing rows where <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">file_date > last_updated_date</code> AND any attribute changed. (2) INSERT new customer_ids not in dim.</div>
+          </div>
+          <div class="scd-step-card">
+            <div class="scd-step-num">05</div>
+            <div class="scd-step-title">Validate the 3-day simulation</div>
+            <div class="scd-step-desc">After running day 10→11→12: <br>• Customer 2 → address = <em>Los Angeles</em> (overwritten) <br>• Customer 1 → name = <em>John D</em> (overwritten) <br>• Customers 4, 5 → newly inserted</div>
+          </div>
+          <div class="scd-step-card">
+            <div class="scd-step-num">06</div>
+            <div class="scd-step-title">Schedule with Schedule Trigger</div>
+            <div class="scd-step-desc">Add a Schedule Trigger in Fabric Data Pipeline: daily at a fixed time. Each day it picks up the new CSV, extracts the date, stages, and upserts — fully automated SCD Type 1 refresh.</div>
+          </div>
+        </div>
+
+        <!-- SQL code -->
+        <div class="section-header">
+          <div class="section-title">💾 SQL Objects</div>
+        </div>
+
+        <div class="sql-block" style="margin-bottom:16px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">dim_customer + stg_customer — Table DDL</span>
+            <span class="sql-block-tag blue">Fabric Warehouse · T-SQL</span>
+          </div>
+          <div class="sql-code"><span class="sql-kw">CREATE TABLE</span> dim_customer (
+    customer_id  <span class="sql-type">INT</span>,
+    name         <span class="sql-type">VARCHAR</span>(<span class="sql-num">100</span>),
+    email        <span class="sql-type">VARCHAR</span>(<span class="sql-num">100</span>),
+    address      <span class="sql-type">VARCHAR</span>(<span class="sql-num">200</span>),
+    last_updated_date <span class="sql-type">VARCHAR</span>(<span class="sql-num">200</span>)   <span class="sql-cm">-- stores 'yyyy-MM-dd' as string</span>
+);
+
+<span class="sql-kw">CREATE TABLE</span> stg_customer (
+    customer_id  <span class="sql-type">INT</span>,
+    name         <span class="sql-type">VARCHAR</span>(<span class="sql-num">100</span>),
+    email        <span class="sql-type">VARCHAR</span>(<span class="sql-num">100</span>),
+    address      <span class="sql-type">VARCHAR</span>(<span class="sql-num">200</span>),
+    file_date    <span class="sql-type">VARCHAR</span>(<span class="sql-num">200</span>)     <span class="sql-cm">-- set from ADF variable after load</span>
+);</div>
+        </div>
+
+        <div class="sql-block" style="margin-bottom:16px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">ADF Expression — Extract date from filename</span>
+            <span class="sql-block-tag orange">ADF Expression</span>
+          </div>
+          <div class="sql-code"><span class="sql-cm">-- filename: customer_2025-07-10.csv</span>
+<span class="sql-cm">-- substring(item().name, 9, 10) → "2025-07-10"</span>
+@<span class="sql-fn">formatDateTime</span>(<span class="sql-fn">substring</span>(item().name, <span class="sql-num">9</span>, <span class="sql-num">10</span>), <span class="sql-str">'yyyy-MM-dd'</span>)
+
+<span class="sql-cm">-- Then stamp the staging table:</span>
+<span class="sql-kw">UPDATE</span> stg_customer
+<span class="sql-kw">SET</span>   file_date = <span class="sql-str">'@{variables(''var_file_date'')}'</span>;</div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-block-header">
+            <span class="sql-block-label">sp_upsert_dim_customer_scd1 — Full Stored Procedure</span>
+            <span class="sql-block-tag green">SCD Type 1 · UPSERT</span>
+          </div>
+          <div class="sql-code"><span class="sql-kw">CREATE OR ALTER PROCEDURE</span> sp_upsert_dim_customer_scd1
+<span class="sql-kw">AS BEGIN</span>
+    <span class="sql-kw">SET NOCOUNT ON</span>;
+
+    <span class="sql-cm">-- ① UPDATE: existing customers with newer data and any changed attribute</span>
+    <span class="sql-kw">UPDATE</span> tgt
+    <span class="sql-kw">SET</span>
+        name              = src.name,
+        email             = src.email,
+        address           = src.address,
+        last_updated_date = src.file_date
+    <span class="sql-kw">FROM</span>  dim_customer tgt
+    <span class="sql-kw">INNER JOIN</span> stg_customer src
+        <span class="sql-kw">ON</span>  tgt.customer_id = src.customer_id
+    <span class="sql-kw">WHERE</span> <span class="sql-fn">TRY_CAST</span>(src.file_date <span class="sql-kw">AS</span> <span class="sql-type">DATE</span>) > <span class="sql-fn">TRY_CAST</span>(tgt.last_updated_date <span class="sql-kw">AS</span> <span class="sql-type">DATE</span>)
+      <span class="sql-kw">AND</span> (
+            tgt.name    &lt;> src.name    <span class="sql-kw">OR</span>
+            tgt.email   &lt;> src.email   <span class="sql-kw">OR</span>
+            tgt.address &lt;> src.address
+          );
+
+    <span class="sql-cm">-- ② INSERT: new customer_ids that don't exist in dim yet</span>
+    <span class="sql-kw">INSERT INTO</span> dim_customer (customer_id, name, email, address, last_updated_date)
+    <span class="sql-kw">SELECT</span> customer_id, name, email, address, file_date
+    <span class="sql-kw">FROM</span>  stg_customer src
+    <span class="sql-kw">WHERE NOT EXISTS</span> (
+        <span class="sql-kw">SELECT</span> <span class="sql-num">1</span>
+        <span class="sql-kw">FROM</span>  dim_customer tgt
+        <span class="sql-kw">WHERE</span> tgt.customer_id = src.customer_id
+    );
+<span class="sql-kw">END</span>;</div>
+        </div>
+
+
+        <!-- ── 3-DAY DATA SIMULATION ── -->
+        <div class="section-header" style="margin-top:32px;">
+          <div class="section-title">🗃️ 3-Day Data Simulation — dim_customer State After Each Run</div>
+        </div>
+
+        <!-- Source CSVs -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-adf);margin-bottom:8px;">📁 customer_2025-07-10.csv</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);line-height:1.9;">
+              1 · John Doe · New York<br>
+              2 · Jane Smith · California<br>
+              3 · Alice Brown · Texas
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-orange);margin-bottom:8px;">📁 customer_2025-07-11.csv</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);line-height:1.9;">
+              <span style="color:var(--accent-orange);">2 · Jane Smith · Los Angeles ✎</span><br>
+              4 · Bob White · Nevada <span style="color:var(--accent-green);font-size:10px;">NEW</span>
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-green);margin-bottom:8px;">📁 customer_2025-07-12.csv</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);line-height:1.9;">
+              <span style="color:var(--accent-orange);">1 · John D · New York ✎</span><br>
+              5 · Eve Black · Florida <span style="color:var(--accent-green);font-size:10px;">NEW</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Day 10 State -->
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="background:rgba(0,120,212,0.12);border:1px solid rgba(0,120,212,0.3);color:var(--accent-adf);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">After Day 1 — 2025-07-10</span>
+            <span style="font-size:11px;color:var(--text-muted);">3 rows INSERTed (dim was empty)</span>
+          </div>
+          <div class="data-preview">
+            <table class="data-table">
+              <thead><tr><th>customer_id</th><th>name</th><th>email</th><th>address</th><th>last_updated_date</th><th>action</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>John Doe</td><td>john@example.com</td><td>New York</td><td style="color:var(--accent-adf);">2025-07-10</td><td style="color:var(--accent-green);font-size:11px;">INSERT</td></tr>
+                <tr><td>2</td><td>Jane Smith</td><td>jane.smith@example.com</td><td>California</td><td style="color:var(--accent-adf);">2025-07-10</td><td style="color:var(--accent-green);font-size:11px;">INSERT</td></tr>
+                <tr><td>3</td><td>Alice Brown</td><td>alice@brown.com</td><td>Texas</td><td style="color:var(--accent-adf);">2025-07-10</td><td style="color:var(--accent-green);font-size:11px;">INSERT</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Day 11 State -->
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="background:rgba(245,166,35,0.12);border:1px solid rgba(245,166,35,0.3);color:var(--accent-orange);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">After Day 2 — 2025-07-11</span>
+            <span style="font-size:11px;color:var(--text-muted);">1 row UPDATEd (Jane: address overwritten) · 1 row INSERTed (Bob: new)</span>
+          </div>
+          <div class="data-preview">
+            <table class="data-table">
+              <thead><tr><th>customer_id</th><th>name</th><th>email</th><th>address</th><th>last_updated_date</th><th>action</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>John Doe</td><td>john@example.com</td><td>New York</td><td style="color:var(--text-muted);">2025-07-10</td><td style="color:var(--text-muted);font-size:11px;">no change</td></tr>
+                <tr><td>2</td><td>Jane Smith</td><td>jane.smith@example.com</td><td style="color:var(--accent-orange);">Los Angeles</td><td style="color:var(--accent-orange);">2025-07-11</td><td style="color:var(--accent-orange);font-size:11px;">UPDATE ✎</td></tr>
+                <tr><td>3</td><td>Alice Brown</td><td>alice@brown.com</td><td>Texas</td><td style="color:var(--text-muted);">2025-07-10</td><td style="color:var(--text-muted);font-size:11px;">no change</td></tr>
+                <tr><td>4</td><td>Bob White</td><td>bob.white@example.com</td><td>Nevada</td><td style="color:var(--accent-green);">2025-07-11</td><td style="color:var(--accent-green);font-size:11px;">INSERT</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Day 12 State -->
+        <div style="margin-bottom:28px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="background:rgba(29,184,135,0.12);border:1px solid rgba(29,184,135,0.3);color:var(--accent-green);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">After Day 3 — 2025-07-12 (Final State)</span>
+            <span style="font-size:11px;color:var(--text-muted);">1 row UPDATEd (John: name overwritten) · 1 row INSERTed (Eve: new)</span>
+          </div>
+          <div class="data-preview">
+            <table class="data-table">
+              <thead><tr><th>customer_id</th><th>name</th><th>email</th><th>address</th><th>last_updated_date</th><th>action</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td style="color:var(--accent-orange);">John D</td><td>john@example.com</td><td>New York</td><td style="color:var(--accent-orange);">2025-07-12</td><td style="color:var(--accent-orange);font-size:11px;">UPDATE ✎</td></tr>
+                <tr><td>2</td><td>Jane Smith</td><td>jane.smith@example.com</td><td>Los Angeles</td><td style="color:var(--text-muted);">2025-07-11</td><td style="color:var(--text-muted);font-size:11px;">no change</td></tr>
+                <tr><td>3</td><td>Alice Brown</td><td>alice@brown.com</td><td>Texas</td><td style="color:var(--text-muted);">2025-07-10</td><td style="color:var(--text-muted);font-size:11px;">no change</td></tr>
+                <tr><td>4</td><td>Bob White</td><td>bob.white@example.com</td><td>Nevada</td><td style="color:var(--text-muted);">2025-07-11</td><td style="color:var(--text-muted);font-size:11px;">no change</td></tr>
+                <tr><td>5</td><td>Eve Black</td><td>eve.black@example.com</td><td>Florida</td><td style="color:var(--accent-green);">2025-07-12</td><td style="color:var(--accent-green);font-size:11px;">INSERT</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SP Logic Callout -->
+        <div class="section-header">
+          <div class="section-title">🔍 SP Logic — What the Procedure Evaluates Each Day</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;">
+          <div style="background:var(--surface);border:1px solid rgba(245,166,35,0.3);border-radius:var(--radius);padding:18px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-orange);margin-bottom:10px;">⚡ UPDATE branch — when triggered</div>
+            <div style="font-size:12.5px;color:var(--text-secondary);line-height:1.9;">
+              ✦ <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">customer_id</code> already exists in dim<br>
+              ✦ <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">file_date &gt; last_updated_date</code> (newer file)<br>
+              ✦ At least one of: name, email, address changed<br><br>
+              <span style="color:var(--accent-orange);">Day 11:</span> Customer 2 — California → Los Angeles<br>
+              <span style="color:var(--accent-orange);">Day 12:</span> Customer 1 — John Doe → John D
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid rgba(29,184,135,0.3);border-radius:var(--radius);padding:18px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-green);margin-bottom:10px;">➕ INSERT branch — when triggered</div>
+            <div style="font-size:12.5px;color:var(--text-secondary);line-height:1.9;">
+              ✦ <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">customer_id</code> does NOT exist in dim yet<br>
+              ✦ Brand-new record — no history exists<br>
+              ✦ <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">NOT EXISTS</code> subquery drives this<br><br>
+              <span style="color:var(--accent-green);">Day 10:</span> Customers 1, 2, 3 (initial load)<br>
+              <span style="color:var(--accent-green);">Day 11:</span> Customer 4 — Bob White<br>
+              <span style="color:var(--accent-green);">Day 12:</span> Customer 5 — Eve Black
+            </div>
+          </div>
+        </div>
+
+        <!-- Validation Queries -->
+        <div class="section-header">
+          <div class="section-title">✅ Validation Queries</div>
+        </div>
+        <div class="sql-block" style="margin-bottom:28px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">Post-run validation — verify final dim_customer state</span>
+            <span class="sql-block-tag blue">Fabric Warehouse · T-SQL</span>
+          </div>
+          <div class="sql-code"><span class="sql-cm">-- Final state: all 5 customers, latest values only</span>
+<span class="sql-kw">SELECT</span> customer_id, name, email, address, last_updated_date
+<span class="sql-kw">FROM</span>   dim_customer
+<span class="sql-kw">ORDER BY</span> customer_id;
+<span class="sql-cm">-- Expected: 5 rows — John D, Jane (LA), Alice, Bob, Eve</span>
+
+<span class="sql-cm">-- Verify overwrite: John should now be 'John D'</span>
+<span class="sql-kw">SELECT</span> name, last_updated_date <span class="sql-kw">FROM</span> dim_customer <span class="sql-kw">WHERE</span> customer_id = <span class="sql-num">1</span>;
+<span class="sql-cm">-- Expected: John D | 2025-07-12</span>
+
+<span class="sql-cm">-- Verify address overwrite: Jane should be Los Angeles</span>
+<span class="sql-kw">SELECT</span> name, address, last_updated_date <span class="sql-kw">FROM</span> dim_customer <span class="sql-kw">WHERE</span> customer_id = <span class="sql-num">2</span>;
+<span class="sql-cm">-- Expected: Jane Smith | Los Angeles | 2025-07-11</span>
+
+<span class="sql-cm">-- Row count: exactly 5 after 3 days (SCD1 never grows beyond unique customer count)</span>
+<span class="sql-kw">SELECT COUNT</span>(*) <span class="sql-kw">AS</span> total_rows <span class="sql-kw">FROM</span> dim_customer;
+<span class="sql-cm">-- Expected: 5</span></div>
+        </div>
+        <div class="tip-block" style="margin-top:20px;">
+          <div class="tip-icon">💡</div>
+          <div class="tip-content">
+            <div class="tip-label">Key Design Decisions</div>
+            <div class="tip-text">
+              <strong style="color:var(--text-primary)">Why TRY_CAST?</strong> The file_date and last_updated_date are stored as VARCHAR — <code>TRY_CAST(... AS DATE)</code> handles the comparison safely without failing on malformed values.
+              <br><br>
+              <strong style="color:var(--text-primary)">Why check attribute changes?</strong> The WHERE clause prevents unnecessary UPDATE I/Os when a newer file re-sends the same customer with no changes — a common pattern in daily full-extract loads.
+              <br><br>
+              <strong style="color:var(--text-primary)">Why TRUNCATE stg_customer per run?</strong> Staging should only contain one day's data. If you append, day 10 records would incorrectly compete with day 12 records in the merge logic.
+            </div>
+          </div>
+        </div>
+      <!-- ── SCD TYPE 2 PANEL ── -->
+      <div id="panel-scd2" class="panel">
+
+        <div class="scd-hero" style="background:linear-gradient(135deg,rgba(123,63,228,0.08) 0%,rgba(123,63,228,0.02) 100%);border-color:rgba(123,63,228,0.25);">
+          <div class="scd-badge" style="color:#A97CF0;background:rgba(123,63,228,0.1);border-color:rgba(123,63,228,0.25);">📖 Deep Dive</div>
+          <div class="scd-title">SCD Type 2 — Preserve Full History</div>
+          <div class="scd-desc">
+            Slowly Changing Dimension Type 2 <strong>keeps every version</strong> of a record. When an attribute changes, the old row is <em>expired</em> (end-dated) and a new row is <em>inserted</em> with a fresh surrogate key. This guide uses the same <code style="font-family:var(--font-mono);font-size:12px;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:3px;">customer_2025-07-10/11/12.csv</code> files but now against a <code style="font-family:var(--font-mono);font-size:12px;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:3px;">dim_customer_scd2</code> table with surrogate keys, <code style="font-family:var(--font-mono);font-size:12px;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:3px;">effective_date</code>, <code style="font-family:var(--font-mono);font-size:12px;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:3px;">expiry_date</code>, and <code style="font-family:var(--font-mono);font-size:12px;background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:3px;">is_current</code> flags — implemented in both T-SQL (Fabric Warehouse) and PySpark Delta MERGE (Fabric Lakehouse).
+          </div>
+        </div>
+
+        <!-- SCD1 vs SCD2 comparison -->
+        <div class="section-header">
+          <div class="section-title">⚖️ SCD Type 1 vs Type 2 — Side by Side</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-orange);margin-bottom:10px;">🔄 SCD Type 1</div>
+            <div style="font-size:12.5px;color:var(--text-secondary);line-height:1.8;">
+              ✦ Overwrites old value in place<br>
+              ✦ No history retained<br>
+              ✦ Simple UPSERT (UPDATE + INSERT)<br>
+              ✦ No surrogate key needed<br>
+              ✦ Smaller table footprint<br>
+              ✦ Use when: history is irrelevant (e.g. phone number corrections)
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid rgba(123,63,228,0.3);border-radius:var(--radius);padding:18px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#A97CF0;margin-bottom:10px;">📜 SCD Type 2</div>
+            <div style="font-size:12.5px;color:var(--text-secondary);line-height:1.8;">
+              ✦ Expires old row, inserts new row<br>
+              ✦ Full history preserved forever<br>
+              ✦ Requires surrogate key (sk_customer)<br>
+              ✦ effective_date / expiry_date / is_current<br>
+              ✦ Larger table, richer analytics<br>
+              ✦ Use when: history matters (e.g. address changes affect revenue attribution)
+            </div>
+          </div>
+        </div>
+
+        <!-- Pipeline Flow -->
+        <div class="section-header">
+          <div class="section-title">📐 SCD Type 2 Pipeline Flow</div>
+        </div>
+        <div class="flow-diagram" style="margin-bottom:28px;">
+          <div class="flow-box">
+            <div class="flow-box-label">📁 Daily CSV</div>
+            <div class="flow-box-sub">customer_2025-07-*.csv</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color:rgba(0,120,212,0.4);">
+            <div class="flow-box-label" style="color:var(--accent-adf);">ADF Copy</div>
+            <div class="flow-box-sub">Load stg_customer</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box">
+            <div class="flow-box-label">📦 stg_customer</div>
+            <div class="flow-box-sub">Staging (truncate)</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color:rgba(232,64,64,0.4);">
+            <div class="flow-box-label" style="color:var(--accent-red);">EXPIRE rows</div>
+            <div class="flow-box-sub">UPDATE is_current=0</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color:rgba(29,184,135,0.4);">
+            <div class="flow-box-label" style="color:var(--accent-green);">INSERT new</div>
+            <div class="flow-box-sub">New sk + effective_date</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="border-color:rgba(123,63,228,0.4);">
+            <div class="flow-box-label" style="color:#A97CF0;">dim_customer_scd2</div>
+            <div class="flow-box-sub">Full history</div>
+          </div>
+        </div>
+
+        <!-- Data simulation -->
+        <div class="section-header">
+          <div class="section-title">🗃️ 3-Day Data Simulation — What Happens</div>
+        </div>
+        <div class="data-preview" style="margin-bottom:28px;">
+          <table class="data-table">
+            <thead>
+              <tr><th>sk_customer</th><th>customer_id</th><th>name</th><th>address</th><th>effective_date</th><th>expiry_date</th><th>is_current</th><th>event</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1001</td><td>1</td><td>John Doe</td><td>New York</td><td>2025-07-10</td><td style="color:var(--text-muted);">9999-12-31</td><td style="color:var(--accent-green);">1</td><td style="color:var(--text-muted);">Day 10 INSERT</td></tr>
+              <tr><td>1002</td><td>2</td><td>Jane Smith</td><td>California</td><td>2025-07-10</td><td style="color:var(--accent-red);">2025-07-10</td><td style="color:var(--accent-red);">0</td><td style="color:var(--accent-red);">Day 11 EXPIRED</td></tr>
+              <tr><td>1003</td><td>2</td><td>Jane Smith</td><td style="color:var(--accent-orange);">Los Angeles</td><td style="color:var(--accent-orange);">2025-07-11</td><td style="color:var(--text-muted);">9999-12-31</td><td style="color:var(--accent-green);">1</td><td style="color:var(--accent-orange);">Day 11 NEW VER</td></tr>
+              <tr><td>1004</td><td>3</td><td>Alice Brown</td><td>Texas</td><td>2025-07-10</td><td style="color:var(--text-muted);">9999-12-31</td><td style="color:var(--accent-green);">1</td><td style="color:var(--text-muted);">Day 10 INSERT</td></tr>
+              <tr><td>1005</td><td>1</td><td style="color:var(--accent-orange);">John D</td><td>New York</td><td style="color:var(--accent-orange);">2025-07-12</td><td style="color:var(--text-muted);">9999-12-31</td><td style="color:var(--accent-green);">1</td><td style="color:var(--accent-orange);">Day 12 NEW VER</td></tr>
+              <tr><td>1001</td><td>1</td><td>John Doe</td><td>New York</td><td>2025-07-10</td><td style="color:var(--accent-red);">2025-07-11</td><td style="color:var(--accent-red);">0</td><td style="color:var(--accent-red);">Day 12 EXPIRED</td></tr>
+              <tr><td>1006</td><td>4</td><td>Bob White</td><td>Nevada</td><td>2025-07-11</td><td style="color:var(--text-muted);">9999-12-31</td><td style="color:var(--accent-green);">1</td><td style="color:var(--text-muted);">Day 11 INSERT</td></tr>
+              <tr><td>1007</td><td>5</td><td>Eve Black</td><td>Florida</td><td>2025-07-12</td><td style="color:var(--text-muted);">9999-12-31</td><td style="color:var(--accent-green);">1</td><td style="color:var(--text-muted);">Day 12 INSERT</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Step cards -->
+        <div class="section-header">
+          <div class="section-title">🗂️ Step-by-Step Setup</div>
+        </div>
+        <div class="scd-steps-grid" style="margin-bottom:28px;">
+          <div class="scd-step-card" style="border-color:rgba(123,63,228,0.2);">
+            <div class="scd-step-num" style="color:#A97CF0;">01</div>
+            <div class="scd-step-title">Create dim_customer_scd2 with surrogate key</div>
+            <div class="scd-step-desc">The table has <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">sk_customer</code> (auto-increment surrogate), the natural key <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">customer_id</code>, tracked attributes, plus <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">effective_date</code>, <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">expiry_date</code>, and <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">is_current</code>. The sentinel value <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">9999-12-31</code> marks open-ended (still-active) records.</div>
+          </div>
+          <div class="scd-step-card" style="border-color:rgba(123,63,228,0.2);">
+            <div class="scd-step-num" style="color:#A97CF0;">02</div>
+            <div class="scd-step-title">Load staging table from daily CSV (same as SCD1)</div>
+            <div class="scd-step-desc">ADF Copy Activity truncates and reloads <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">stg_customer</code> daily. Use the same ADF expression to extract <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">file_date</code> from the filename. The staging schema is identical to SCD Type 1.</div>
+          </div>
+          <div class="scd-step-card" style="border-color:rgba(232,64,64,0.2);">
+            <div class="scd-step-num" style="color:var(--accent-red);">03</div>
+            <div class="scd-step-title">EXPIRE changed rows (UPDATE existing current rows)</div>
+            <div class="scd-step-desc">For rows where the natural key matches AND any attribute has changed: set <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">is_current = 0</code> and <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">expiry_date = file_date - 1 day</code>. The old record is now a historical record — never deleted.</div>
+          </div>
+          <div class="scd-step-card" style="border-color:rgba(29,184,135,0.2);">
+            <div class="scd-step-num" style="color:var(--accent-green);">04</div>
+            <div class="scd-step-title">INSERT new version rows for changed + new customers</div>
+            <div class="scd-step-desc">Insert all rows from staging where: (a) the customer is brand new to dim, OR (b) the customer's row was just expired in step 03. New rows get <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">effective_date = file_date</code>, <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">expiry_date = '9999-12-31'</code>, <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">is_current = 1</code>.</div>
+          </div>
+          <div class="scd-step-card" style="border-color:rgba(123,63,228,0.2);">
+            <div class="scd-step-num" style="color:#A97CF0;">05</div>
+            <div class="scd-step-title">Validate: query current vs historical records</div>
+            <div class="scd-step-desc">After all 3 days: <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">SELECT * FROM dim_customer_scd2 WHERE is_current = 1</code> returns 5 active records. <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">WHERE is_current = 0</code> returns 2 expired records (old John Doe, old Jane Smith).</div>
+          </div>
+          <div class="scd-step-card" style="border-color:rgba(123,63,228,0.2);">
+            <div class="scd-step-num" style="color:#A97CF0;">06</div>
+            <div class="scd-step-title">PySpark alternative: Delta MERGE for Lakehouse SCD2</div>
+            <div class="scd-step-desc">In Fabric Lakehouse, use Delta's MERGE statement with <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">whenMatchedUpdate</code> to expire and <code style="font-family:var(--font-mono);font-size:11px;background:var(--surface-3);padding:1px 4px;border-radius:3px;">whenNotMatchedInsert</code> to add new versions. Full PySpark code shown below.</div>
+          </div>
+        </div>
+
+        <!-- SQL DDL -->
+        <div class="section-header">
+          <div class="section-title">💾 SQL Objects — T-SQL (Fabric Warehouse)</div>
+        </div>
+
+        <div class="sql-block" style="margin-bottom:16px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">dim_customer_scd2 — Table DDL</span>
+            <span class="sql-block-tag" style="color:#A97CF0;background:rgba(123,63,228,0.1);border:1px solid rgba(123,63,228,0.2);">Fabric Warehouse · T-SQL</span>
+          </div>
+          <div class="sql-code"><span class="sql-kw">CREATE TABLE</span> dim_customer_scd2 (
+    sk_customer      <span class="sql-type">INT</span>          <span class="sql-kw">IDENTITY</span>(<span class="sql-num">1001</span>,<span class="sql-num">1</span>),   <span class="sql-cm">-- surrogate key, auto-increment</span>
+    customer_id      <span class="sql-type">INT</span>          <span class="sql-kw">NOT NULL</span>,              <span class="sql-cm">-- natural/business key</span>
+    name             <span class="sql-type">VARCHAR</span>(<span class="sql-num">100</span>),
+    email            <span class="sql-type">VARCHAR</span>(<span class="sql-num">100</span>),
+    address          <span class="sql-type">VARCHAR</span>(<span class="sql-num">200</span>),
+    effective_date   <span class="sql-type">DATE</span>         <span class="sql-kw">NOT NULL</span>,              <span class="sql-cm">-- when this version became active</span>
+    expiry_date      <span class="sql-type">DATE</span>         <span class="sql-kw">NOT NULL</span>               <span class="sql-cm">-- 9999-12-31 = still current</span>
+                     <span class="sql-kw">DEFAULT</span> <span class="sql-str">'9999-12-31'</span>,
+    is_current       <span class="sql-type">BIT</span>          <span class="sql-kw">NOT NULL</span>               <span class="sql-cm">-- 1 = active record, 0 = expired</span>
+                     <span class="sql-kw">DEFAULT</span> <span class="sql-num">1</span>,
+    dw_created_date  <span class="sql-type">DATETIME2</span>    <span class="sql-kw">DEFAULT</span> <span class="sql-fn">GETDATE</span>()      <span class="sql-cm">-- audit: when row was written to DW</span>
+);</div>
+        </div>
+
+        <div class="sql-block" style="margin-bottom:16px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">sp_scd2_dim_customer — Full Stored Procedure</span>
+            <span class="sql-block-tag green">SCD Type 2 · EXPIRE + INSERT</span>
+          </div>
+          <div class="sql-code"><span class="sql-kw">CREATE OR ALTER PROCEDURE</span> sp_scd2_dim_customer
+<span class="sql-kw">AS BEGIN</span>
+    <span class="sql-kw">SET NOCOUNT ON</span>;
+
+    <span class="sql-cm">-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+    <span class="sql-cm">-- STEP 1: EXPIRE rows where customer exists AND any</span>
+    <span class="sql-cm">--         tracked attribute has changed</span>
+    <span class="sql-cm">-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+    <span class="sql-kw">UPDATE</span> tgt
+    <span class="sql-kw">SET</span>
+        is_current   = <span class="sql-num">0</span>,
+        expiry_date  = <span class="sql-fn">DATEADD</span>(<span class="sql-kw">DAY</span>, -<span class="sql-num">1</span>, <span class="sql-fn">TRY_CAST</span>(src.file_date <span class="sql-kw">AS</span> <span class="sql-type">DATE</span>))
+    <span class="sql-kw">FROM</span>  dim_customer_scd2 tgt
+    <span class="sql-kw">INNER JOIN</span> stg_customer src
+        <span class="sql-kw">ON</span>  tgt.customer_id = src.customer_id
+       <span class="sql-kw">AND</span>  tgt.is_current   = <span class="sql-num">1</span>
+    <span class="sql-kw">WHERE</span> (
+            tgt.name    &lt;> src.name    <span class="sql-kw">OR</span>
+            tgt.email   &lt;> src.email   <span class="sql-kw">OR</span>
+            tgt.address &lt;> src.address
+          );
+
+    <span class="sql-cm">-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+    <span class="sql-cm">-- STEP 2: INSERT new version for changed customers</span>
+    <span class="sql-cm">--         (those just expired above)</span>
+    <span class="sql-cm">-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+    <span class="sql-kw">INSERT INTO</span> dim_customer_scd2
+           (customer_id, name, email, address, effective_date, expiry_date, is_current)
+    <span class="sql-kw">SELECT</span> src.customer_id, src.name, src.email, src.address,
+           <span class="sql-fn">TRY_CAST</span>(src.file_date <span class="sql-kw">AS</span> <span class="sql-type">DATE</span>),  <span class="sql-cm">-- effective_date = file_date</span>
+           <span class="sql-str">'9999-12-31'</span>,                         <span class="sql-cm">-- open-ended</span>
+           <span class="sql-num">1</span>                                      <span class="sql-cm">-- is_current = active</span>
+    <span class="sql-kw">FROM</span>  stg_customer src
+    <span class="sql-kw">WHERE EXISTS</span> (
+        <span class="sql-cm">-- customer existed but was just expired in step 1</span>
+        <span class="sql-kw">SELECT</span> <span class="sql-num">1</span>
+        <span class="sql-kw">FROM</span>  dim_customer_scd2 tgt
+        <span class="sql-kw">WHERE</span> tgt.customer_id = src.customer_id
+          <span class="sql-kw">AND</span> tgt.is_current   = <span class="sql-num">0</span>
+          <span class="sql-kw">AND</span> tgt.expiry_date  = <span class="sql-fn">DATEADD</span>(<span class="sql-kw">DAY</span>, -<span class="sql-num">1</span>, <span class="sql-fn">TRY_CAST</span>(src.file_date <span class="sql-kw">AS</span> <span class="sql-type">DATE</span>))
+    );
+
+    <span class="sql-cm">-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+    <span class="sql-cm">-- STEP 3: INSERT brand-new customers (never seen before)</span>
+    <span class="sql-cm">-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+    <span class="sql-kw">INSERT INTO</span> dim_customer_scd2
+           (customer_id, name, email, address, effective_date, expiry_date, is_current)
+    <span class="sql-kw">SELECT</span> src.customer_id, src.name, src.email, src.address,
+           <span class="sql-fn">TRY_CAST</span>(src.file_date <span class="sql-kw">AS</span> <span class="sql-type">DATE</span>),
+           <span class="sql-str">'9999-12-31'</span>,
+           <span class="sql-num">1</span>
+    <span class="sql-kw">FROM</span>  stg_customer src
+    <span class="sql-kw">WHERE NOT EXISTS</span> (
+        <span class="sql-kw">SELECT</span> <span class="sql-num">1</span>
+        <span class="sql-kw">FROM</span>  dim_customer_scd2 tgt
+        <span class="sql-kw">WHERE</span> tgt.customer_id = src.customer_id
+    );
+<span class="sql-kw">END</span>;</div>
+        </div>
+
+        <!-- PySpark Delta Section -->
+        <div class="section-header" style="margin-top:32px;">
+          <div class="section-title">⚡ PySpark Delta MERGE — Fabric Lakehouse Approach</div>
+        </div>
+
+        <div class="dataset-intro" style="background:linear-gradient(135deg,rgba(123,63,228,0.07) 0%,rgba(123,63,228,0.02) 100%);border-color:rgba(123,63,228,0.2);margin-bottom:20px;">
+          <div class="dataset-intro-title" style="color:#A97CF0;">🔥 When to use PySpark Delta MERGE vs T-SQL Stored Procedure</div>
+          <div class="dataset-intro-text">
+            Use <strong>T-SQL SP</strong> when your target is a Fabric <em>Warehouse</em> (SQL-first, BI-ready, ACID T-SQL). Use <strong>PySpark Delta MERGE</strong> when your target is a Fabric <em>Lakehouse Delta table</em> (Spark-first, large-scale, part of a Medallion pipeline). Both achieve the same SCD2 result — the choice is about where your Gold layer lives.
+          </div>
+        </div>
+
+        <div class="sql-block" style="margin-bottom:16px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">Step 1 — Load CSV into Spark DataFrame and stamp file_date</span>
+            <span class="sql-block-tag" style="color:#A97CF0;background:rgba(123,63,228,0.1);border:1px solid rgba(123,63,228,0.2);">PySpark · Fabric Notebook</span>
+          </div>
+          <div class="sql-code"><span class="sql-kw">from</span> pyspark.sql.functions <span class="sql-kw">import</span> col, lit, to_date, current_date
+<span class="sql-kw">from</span> delta.tables <span class="sql-kw">import</span> DeltaTable
+
+<span class="sql-cm"># ── Load today's CSV (e.g. customer_2025-07-11.csv)</span>
+file_date = <span class="sql-str">"2025-07-11"</span>          <span class="sql-cm"># extracted from filename via ADF var_file_date</span>
+
+stg_df = (spark.read
+    .format(<span class="sql-str">"csv"</span>)
+    .option(<span class="sql-str">"header"</span>, <span class="sql-str">"true"</span>)
+    .load(<span class="sql-str">f"Files/customer_{file_date}.csv"</span>)
+    .withColumn(<span class="sql-str">"file_date"</span>,   lit(file_date))
+    .withColumn(<span class="sql-str">"effective_dt"</span>, to_date(lit(file_date), <span class="sql-str">"yyyy-MM-dd"</span>))
+)
+stg_df.createOrReplaceTempView(<span class="sql-str">"stg_customer"</span>)
+stg_df.show()</div>
+        </div>
+
+        <div class="sql-block" style="margin-bottom:16px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">Step 2 — Create dim_customer_scd2 Delta table (first run only)</span>
+            <span class="sql-block-tag" style="color:#A97CF0;background:rgba(123,63,228,0.1);border:1px solid rgba(123,63,228,0.2);">PySpark · Delta DDL</span>
+          </div>
+          <div class="sql-code">spark.sql(<span class="sql-str">"""
+  CREATE TABLE IF NOT EXISTS dim_customer_scd2 (
+      sk_customer    BIGINT  GENERATED ALWAYS AS IDENTITY,
+      customer_id    INT     NOT NULL,
+      name           STRING,
+      email          STRING,
+      address        STRING,
+      effective_date DATE    NOT NULL,
+      expiry_date    DATE    NOT NULL,
+      is_current     INT     NOT NULL
+  )
+  USING DELTA
+  TBLPROPERTIES ('delta.enableChangeDataFeed' = 'true')
+"""</span>)
+<span class="sql-cm"># enableChangeDataFeed allows downstream consumers to</span>
+<span class="sql-cm"># track exactly which rows were expired/inserted each run.</span></div>
+        </div>
+
+        <div class="sql-block" style="margin-bottom:16px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">Step 3 — EXPIRE changed rows using Delta MERGE (whenMatched)</span>
+            <span class="sql-block-tag" style="color:var(--accent-red);background:rgba(232,64,64,0.08);border:1px solid rgba(232,64,64,0.2);">EXPIRE STEP</span>
+          </div>
+          <div class="sql-code"><span class="sql-cm"># Build the "rows that changed" DataFrame</span>
+changed_df = spark.sql(<span class="sql-str">"""
+    SELECT stg.*
+    FROM stg_customer stg
+    INNER JOIN dim_customer_scd2 dim
+        ON  stg.customer_id = dim.customer_id
+       AND  dim.is_current   = 1
+    WHERE stg.name    &lt;> dim.name
+       OR stg.email   &lt;> dim.email
+       OR stg.address &lt;> dim.address
+"""</span>)
+
+<span class="sql-cm"># EXPIRE: update is_current=0 and set expiry_date for changed rows</span>
+dim_table = DeltaTable.forName(spark, <span class="sql-str">"dim_customer_scd2"</span>)
+
+dim_table.alias(<span class="sql-str">"tgt"</span>).merge(
+    changed_df.alias(<span class="sql-str">"src"</span>),
+    <span class="sql-str">"tgt.customer_id = src.customer_id AND tgt.is_current = 1"</span>
+).whenMatchedUpdate(set={
+    <span class="sql-str">"is_current"</span>  : lit(<span class="sql-num">0</span>),
+    <span class="sql-str">"expiry_date"</span> : <span class="sql-str">"date_sub(src.effective_dt, 1)"</span>
+}).execute()
+
+print(<span class="sql-str">f"Expired {changed_df.count()} changed rows"</span>)</div>
+        </div>
+
+        <div class="sql-block" style="margin-bottom:16px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">Step 4 — INSERT new versions (changed + brand-new customers)</span>
+            <span class="sql-block-tag green">INSERT STEP</span>
+          </div>
+          <div class="sql-code"><span class="sql-cm"># Union changed customers (new version) + brand-new customers</span>
+new_versions_df = spark.sql(<span class="sql-str">"""
+    SELECT stg.customer_id, stg.name, stg.email, stg.address,
+           stg.effective_dt  AS effective_date,
+           DATE'9999-12-31'  AS expiry_date,
+           1                 AS is_current
+    FROM stg_customer stg
+    WHERE
+      -- new version for changed customers (expired above)
+      EXISTS (
+          SELECT 1 FROM dim_customer_scd2 dim
+          WHERE dim.customer_id = stg.customer_id AND dim.is_current = 0
+            AND dim.expiry_date = date_sub(stg.effective_dt, 1)
+      )
+      OR
+      -- brand-new customers never seen before
+      NOT EXISTS (
+          SELECT 1 FROM dim_customer_scd2 dim
+          WHERE dim.customer_id = stg.customer_id
+      )
+"""</span>)
+
+<span class="sql-cm"># Append new version rows — no MERGE needed, just insertOnly</span>
+new_versions_df.write \
+    .format(<span class="sql-str">"delta"</span>) \
+    .mode(<span class="sql-str">"append"</span>) \
+    .saveAsTable(<span class="sql-str">"dim_customer_scd2"</span>)
+
+print(<span class="sql-str">f"Inserted {new_versions_df.count()} new/updated rows"</span>)</div>
+        </div>
+
+        <div class="sql-block" style="margin-bottom:16px;">
+          <div class="sql-block-header">
+            <span class="sql-block-label">Step 5 — Validate: current vs historical records</span>
+            <span class="sql-block-tag blue">Validation Queries</span>
+          </div>
+          <div class="sql-code"><span class="sql-cm">-- Current (active) customers — always 1 row per customer_id</span>
+<span class="sql-kw">SELECT</span> customer_id, name, address, effective_date
+<span class="sql-kw">FROM</span>   dim_customer_scd2
+<span class="sql-kw">WHERE</span>  is_current = <span class="sql-num">1</span>
+<span class="sql-kw">ORDER BY</span> customer_id;
+
+<span class="sql-cm">-- Full history — all versions per customer</span>
+<span class="sql-kw">SELECT</span> customer_id, name, address, effective_date, expiry_date, is_current
+<span class="sql-kw">FROM</span>   dim_customer_scd2
+<span class="sql-kw">ORDER BY</span> customer_id, effective_date;
+
+<span class="sql-cm">-- Point-in-time query: what did customer 2 look like on 2025-07-10?</span>
+<span class="sql-kw">SELECT</span> <span class="sql-str">'2025-07-10'</span> <span class="sql-kw">AS</span> query_date, name, address
+<span class="sql-kw">FROM</span>   dim_customer_scd2
+<span class="sql-kw">WHERE</span>  customer_id  = <span class="sql-num">2</span>
+  <span class="sql-kw">AND</span>  effective_date &lt;= <span class="sql-str">'2025-07-10'</span>
+  <span class="sql-kw">AND</span>  expiry_date    >= <span class="sql-str">'2025-07-10'</span>;
+<span class="sql-cm">-- Returns: Jane Smith | California  (her address BEFORE the change)</span></div>
+        </div>
+
+        <div class="tip-block" style="margin-top:4px;background:rgba(123,63,228,0.06);border-color:rgba(123,63,228,0.2);">
+          <div class="tip-icon">💡</div>
+          <div class="tip-content">
+            <div class="tip-label" style="color:#A97CF0;">Key Design Decisions</div>
+            <div class="tip-text">
+              <strong style="color:var(--text-primary)">Why IDENTITY starts at 1001?</strong> Leaves room for reserved/unknown member rows at 0–1000. Unknown member rows (sk=0, name='Unknown') handle fact rows that arrive before the dimension is populated.
+              <br><br>
+              <strong style="color:var(--text-primary)">Why expiry_date = file_date - 1 day?</strong> Creates a non-overlapping effective/expiry range. Customer 2 was active <em>California</em> from Jul 10 → Jul 10. The new <em>Los Angeles</em> row is active from Jul 11 → 9999-12-31. This ensures clean point-in-time queries with simple BETWEEN logic.
+              <br><br>
+              <strong style="color:var(--text-primary)">Why 9999-12-31 instead of NULL for open-ended rows?</strong> NULL requires IS NULL checks everywhere. A sentinel date allows simple <code>WHERE effective_date &lt;= @query_date AND expiry_date >= @query_date</code> without special-casing NULLs — critical for Power BI DAX measures.
+              <br><br>
+              <strong style="color:var(--text-primary)">Do NOT use DELETE in SCD2.</strong> Historical rows must never be deleted — that would permanently destroy audit history. Only UPDATE (to expire) and INSERT are valid operations in a Type 2 dimension.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+<script>
+// ── SEARCH (progressive enhancement only) ──
+document.addEventListener('DOMContentLoaded', function() {
+  var searchInput = document.getElementById('searchInput');
+  if (!searchInput) return;
+  searchInput.addEventListener('input', function() {
+    var q = this.value.toLowerCase().trim();
+    document.querySelectorAll('details.use-card').forEach(function(card) {
+      if (!q) { card.style.display = ''; return; }
+      var text = card.innerText.toLowerCase();
+      card.style.display = text.includes(q) ? '' : 'none';
+    });
+  });
+});
+</script>
+</body>
+</html>
